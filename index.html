@@ -468,34 +468,6 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--ink)
 .mp-row:hover,.mp-row:active{background:var(--v2-cream-lt);border-color:var(--v2-line)}
 .mp-row.mp-sel{background:var(--v2-accent-soft,#f3e9d6);border-color:var(--v2-accent)}
 .mp-row.mp-other{margin-top:8px;border-top:1px solid var(--v2-line);border-radius:0 0 12px 12px;padding-top:18px;color:var(--v2-caramel);font-weight:500}
-
-/* Task 16 fix-round：s-whoami 身分選擇畫面是全頁（非 modal），.mp-row 原本只在
-   .cf-sheet 卡片 + 深色遮罩上才有視覺對比。這裡另外給它一張米色卡片容器＋每列
-   自帶底色，讓 22 個名字讀起來像清單而非裸文字。全部用 #s-whoami 前綴嚴格
-   scope，不動 openMemberPicker() 既有 .mp-row 外觀。 */
-#s-whoami .wrap{
-  display:flex;flex-direction:column;
-  max-width:520px;padding:20px 20px 24px;
-  min-height:0;
-}
-#s-whoami .whoami-hint{margin:0 2px 14px;flex-shrink:0}
-#s-whoami .whoami-card{
-  background:var(--v2-milk);border:1px solid var(--v2-line);
-  border-radius:20px;padding:10px;
-  flex:1;min-height:0;display:flex;flex-direction:column;
-  overflow:hidden;
-}
-#s-whoami .mp-list{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
-#s-whoami .mp-row{
-  background:var(--v2-cream-lt);border-color:var(--v2-line);
-  min-height:48px;
-}
-#s-whoami .mp-row:hover,#s-whoami .mp-row:active{background:var(--v2-paper);border-color:var(--v2-line-strong)}
-#s-whoami .mp-row.mp-other{
-  background:transparent;border-color:transparent;
-  margin-top:8px;border-top:1px solid var(--v2-line-strong);border-radius:0;padding-top:18px;
-}
-#s-whoami .mp-row.mp-other:hover,#s-whoami .mp-row.mp-other:active{background:var(--v2-cream-lt);border-top-color:var(--v2-line-strong)}
 .mp-check{display:inline-block;width:16px;text-align:center;color:var(--v2-accent);font-weight:900}
 
 /* PDF PRINT STYLES */
@@ -1437,27 +1409,9 @@ body{background:var(--v2-paper)}
 }
 
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-<script>
-  window.SB = supabase.createClient(
-    'https://masmdiyzbiinwgwvuuwo.supabase.co',
-    'sb_publishable_nH8b9UAITnDkd5WOoUcwfw_3Sccj0Dh'
-  );
-</script>
 <script src="https://cdn.jsdelivr.net/npm/html2pdf.js/dist/html2pdf.bundle.min.js"></script>
 </head>
 <body>
-
-<!-- WHOAMI -->
-<div class="scr" id="s-whoami">
-  <div class="tb"><div class="tb-t" style="flex:1;text-align:center">你是哪位？</div></div>
-  <div class="wrap">
-    <p class="v2-sub whoami-hint">請從班上名單中點選你的名字</p>
-    <div class="whoami-card">
-      <div class="mp-list" id="whoami-list"></div>
-    </div>
-  </div>
-</div>
 
 <!-- LANDING -->
 <div class="scr on" id="s-land">
@@ -1501,6 +1455,13 @@ body{background:var(--v2-paper)}
       <svg class="v2-ico" viewBox="0 0 24 24" fill="none"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
       <span>重新整理（清除快取）</span>
     </button>
+
+    <button class="v2-link-row" onclick="repairCloudIdx()">
+      <svg class="v2-ico" viewBox="0 0 24 24" fill="none"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+      <span>修復雲端順序（資料對不齊時用）</span>
+    </button>
+
+    <button onclick="resetAllData()" style="display:none" aria-hidden="true">系統重置</button>
 
   </div>
 </div>
@@ -1644,7 +1605,7 @@ body{background:var(--v2-paper)}
       <div class="v2-step-num">·</div>
       <div>
         <div class="v2-step-t">取消整個團</div>
-        <div class="v2-step-b">在訂單清單頁底部「取消此次開團」，需要班級管理碼。</div>
+        <div class="v2-step-b">在訂單清單頁底部「取消此次開團」，需要班級密碼 <code>118</code>。</div>
       </div>
     </div>
 
@@ -1652,7 +1613,7 @@ body{background:var(--v2-paper)}
       <div class="v2-step-num">·</div>
       <div>
         <div class="v2-step-t">系統重置（清空所有資料）</div>
-        <div class="v2-step-b">進階操作需要班級管理碼，一般情況不要動。</div>
+        <div class="v2-step-b">進階操作，需要密碼 <code>118</code>。一般情況不要動！</div>
       </div>
     </div>
 
@@ -1771,6 +1732,15 @@ body{background:var(--v2-paper)}
   <div class="wrap" id="ps-wrap"></div>
 </div>
 
+<!-- 菜單品項圖片編輯 -->
+<div class="scr" id="s-item-images">
+  <div class="tb">
+    <button class="tb-bk" onclick="go('s-presets')">←</button>
+    <div><div class="tb-t" id="img-title">編輯菜單圖片</div><div class="tb-s" id="img-sub"></div></div>
+  </div>
+  <div class="wrap" id="img-wrap"></div>
+</div>
+
 <!-- AI LOADING + MENU CONFIRM + HOST + PAY (合併在一個 screen) -->
 <div class="scr" id="s-setup">
   <div class="tb">
@@ -1829,8 +1799,7 @@ body{background:var(--v2-paper)}
 // ═══════════════════════════════════════════════
 // CONFIG
 // ═══════════════════════════════════════════════
-// 正式資料來源已改為 Supabase；GAS 僅保留在舊函式中供遷移期間回溯，不再於啟動時呼叫。
-const DATA_BACKEND = 'supabase';
+const PW = '118';
 
 // ?reset=1 → 清掉本機資料重新從雲端同步。給「送出中卡住」「畫面資料怪怪的」的人用。
 // 注意：會一併清掉尚未送出的訂單，所以要先問過。
@@ -1842,8 +1811,9 @@ if(new URLSearchParams(location.search).has('reset')){
   location.replace(location.pathname);
 }
 
-// 舊 GAS URL 刻意停用；保留的舊函式無法再對 Google Sheet 讀寫。
-const GAS_URL = '';
+// 姓名改為手動輸入，不使用名單
+// 拍照辨識菜單透過 GAS 後端代理（避免 CORS、避免 Key 外洩）
+const GAS_URL = localStorage.getItem('gas_url') || 'https://script.google.com/macros/s/AKfycbw6JlTEFcExbnMQo5QqRQl4ijBHaG7QAAGTKZLY5SO2i4pfg_5iBmQ57h_5kSO1dDLF/exec';
 const WD = ['日','一','二','三','四','五','六'];
 const WDF = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
 
@@ -1915,21 +1885,10 @@ function init(){
   try{ S.groups=JSON.parse(localStorage.getItem('grps')||'{}'); }catch(e){}
   try{ S.remoteMenus=JSON.parse(localStorage.getItem('remote_menus')||'null'); }catch(e){}
   renderGrid();
+  if(GAS_URL){ syncGAS(); syncMenus(); startSyncPolling(); retryPendingOrders(); }
   updatePendingBanner();
 }
-function escHtml(value){
-  return String(value??'').replace(/[&<>"']/g,ch=>({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-  })[ch]);
-}
-function safeTelHref(value){
-  const tel=String(value??'').replace(/[^0-9+*#,;]/g,'');
-  return tel ? 'tel:'+tel : '';
-}
-function saveG(){
-  try{ localStorage.setItem('grps',JSON.stringify(S.groups)); }
-  catch(e){ console.warn('本機快取寫入失敗，雲端資料不受影響',e); }
-}
+function saveG(){ localStorage.setItem('grps',JSON.stringify(S.groups)); }
 function setGasUrl(url){
   localStorage.setItem('gas_url',url);
   location.reload();
@@ -1987,6 +1946,48 @@ const MEMBERS = [
   'Jerry 政','俊民','吳佳展','微軒 / Wei (蝦味先)','王雅文','盧宣佑 Yoyo','筱婷','羅國銘','蘇玟蓁 Wen','趙吉兒','Becky'
 ];
 
+// ═══════════════════════════════════════════════
+// 系統重置（密碼保護）
+// ═══════════════════════════════════════════════
+// ⚠️ 改密碼：把下面這行的字串換成你想要的
+const RESET_PASSWORD = '118';
+
+async function resetAllData(){
+  const pw = prompt('⚠️ 系統重置會清除：\n• 雲端所有開團、訂單資料\n• 本機所有開團與設定\n（店家清單與菜單會保留）\n\n請輸入管理密碼：');
+  if(pw === null) return; // 取消
+  if(pw !== RESET_PASSWORD){ alert('❌ 密碼錯誤'); return; }
+  if(!confirm('最後確認：所有開團與訂單資料將被永久刪除，無法復原。\n\n要繼續嗎？')) return;
+
+  toast('⏳ 重置中…');
+  // 1. 呼叫 GAS 清雲端
+  let cloudOk = true;
+  if(GAS_URL){
+    try{
+      const r = await sendGAS({action:'resetAll', password: RESET_PASSWORD});
+      if(!r || r.success === false){
+        cloudOk = false;
+        console.error('GAS reset failed:', r);
+      }
+    }catch(e){
+      cloudOk = false;
+      console.error(e);
+    }
+  }
+
+  // 2. 清本地（保留店家清單與 GAS_URL 設定）
+  const keepKeys = ['shops_drink','shops_food','gas_url'];
+  const backup = {};
+  keepKeys.forEach(k=>{ const v = localStorage.getItem(k); if(v!==null) backup[k]=v; });
+  localStorage.clear();
+  Object.entries(backup).forEach(([k,v])=>localStorage.setItem(k,v));
+
+  if(cloudOk){
+    alert('✅ 重置完成！\n所有資料已清空，畫面即將重新整理。');
+  } else {
+    alert('⚠️ 本機已重置，但雲端清除失敗\n（可能 GAS 後端尚未更新支援 resetAll，請重新部署 gas-backend.js）\n\n畫面即將重新整理。');
+  }
+  setTimeout(()=>location.reload(), 500);
+}
 function dlbl(k){ const d=new Date(k+'T00:00:00'); return `${d.getMonth()+1}月${d.getDate()}日（${WD[d.getDay()]}）`; }
 
 // ═══════════════════════════════════════════════
@@ -2127,16 +2128,16 @@ function renderDay(){
       grpCards+='<div class="v2-grplist">';
       grpList.forEach(function(grp,idx){
         var cnt=(grp.orders||[]).length;
-        var ann=grp.announcement?('<div class="v2-grp-ann">「'+escHtml(grp.announcement)+'」</div>'):'';
+        var ann=grp.announcement?('<div class="v2-grp-ann">「'+grp.announcement+'」</div>'):'';
         // 整張卡片 onclick 開訂單清單；內部按鈕用 stopPropagation 才另做動作
         var cardClickG='openGroupDetailIdx(\''+type+'\','+idx+')';
         var jg='var e=arguments[0]||window.event;if(e){e.stopPropagation();}joinGroup(\''+type+'\','+idx+')';
         grpCards+='<div class="v2-grp" onclick="'+cardClickG+'">'
           +'<div class="v2-grp-head">'
-          +'<div class="v2-grp-shop">'+escHtml(grp.shopName||'未命名店家')+'</div>'
+          +'<div class="v2-grp-shop">'+(grp.shopName||'未命名店家')+'</div>'
           +'<div class="v2-grp-cnt">'+cnt+' ORDERS</div>'
           +'</div>'
-          +'<div class="v2-grp-host">團主 '+escHtml(grp.hostName||'—')+'</div>'
+          +'<div class="v2-grp-host">團主 '+(grp.hostName||'—')+'</div>'
           +ann
           +'<div class="v2-grp-acts">'
           +'<button type="button" class="v2-grp-btn join" onclick="'+jg+'">＋ 加入點餐</button>'
@@ -2210,8 +2211,8 @@ function openGroupDetailIdx(type, idx){
   if(!S.curGroup){ toast('找不到此團'); return; }
   renderGroupDetail();
   go('s-group');
-  // 進入訂單清單畫面時立即讀一次 Supabase；後續由 Realtime 推送。
-  loadGroups(S.selDate).then(rerenderCurrentScreen);
+  // 進入訂單清單畫面時立即同步一次，避免等下一輪輪詢
+  if(GAS_URL && typeof syncGAS==='function') syncGAS();
 }
 
 // legacy（單團進入，保留向後相容）
@@ -2237,15 +2238,6 @@ function renderGroupDetail(){
   // 重算每筆訂單金額，避免歷史資料的 total/sub 錯誤
   const total   = orders.reduce(function(s,o){return s+calcOrderTotal(o);},0);
 
-  // 各付款方式統計
-  const cnt = { linepay:0, ipass:0, cash:0, none:0 };
-  const amt = { linepay:0, ipass:0, cash:0, none:0 };
-  orders.forEach(function(o){
-    const k = (o.paidMethod==='linepay'||o.paidMethod==='ipass'||o.paidMethod==='cash') ? o.paidMethod : 'none';
-    cnt[k]++;
-    amt[k] += calcOrderTotal(o);
-  });
-
   const grpNum = (S.groups[S.selDate]&&Array.isArray(S.groups[S.selDate][S.type])&&S.groups[S.selDate][S.type].length>1) ? ' #'+(S.curGroupIdx+1) : '';
   document.getElementById('gd-title').textContent=cfg.title+grpNum+'訂單';
   document.getElementById('gd-sub').textContent=grp.shopName+'｜團主 '+grp.hostName;
@@ -2256,7 +2248,7 @@ function renderGroupDetail(){
     ordersHtml = '<div style="color:var(--ink3);text-align:center;padding:24px;font-size:.85rem">尚無人訂購</div>';
   } else {
     orders.forEach(function(o,i){
-      const items = (o.items||[]).map(function(it){return escHtml(it.name)+' × '+Number(it.qty||0);}).join('　');
+      const items = (o.items||[]).map(function(it){return it.name+' × '+it.qty;}).join('　');
       let pmBadge;
       if(o.paidMethod==='linepay'){
         pmBadge='<span style="display:inline-flex;align-items:center;gap:5px;background:#06c755;color:#fff;padding:5px 12px;border-radius:7px;font-size:.74rem;font-weight:900">💚 LINE Pay</span>';
@@ -2269,9 +2261,9 @@ function renderGroupDetail(){
       }
       const oTotal = calcOrderTotal(o);
       ordersHtml += '<div class="order-card">'
-        +'<div class="oc-top"><span class="oc-name">👤 '+escHtml(o.name)+'</span><span class="oc-total">NT$'+oTotal+'</span></div>'
+        +'<div class="oc-top"><span class="oc-name">👤 '+o.name+'</span><span class="oc-total">NT$'+oTotal+'</span></div>'
         +'<div class="oc-items">'+items+'</div>'
-        +(o.note?'<div style="font-size:.72rem;color:var(--ink3);margin-top:3px">📝 '+escHtml(o.note)+'</div>':'')
+        +(o.note?'<div style="font-size:.72rem;color:var(--ink3);margin-top:3px">📝 '+o.note+'</div>':'')
         +'<div style="display:flex;gap:8px;margin-top:12px;align-items:center;flex-wrap:wrap">'
         +'<div style="flex:1;min-width:120px">'+pmBadge+'</div>'
         +'<button onclick="startEditOrder('+i+')" class="v2-row-btn v2-row-btn-edit">✏️ 修改</button>'
@@ -2283,14 +2275,11 @@ function renderGroupDetail(){
   const wrap = document.getElementById('gd-wrap');
   wrap.innerHTML = ''
     +'<div class="gd-hero '+cfg.heroClass+'">'
-      +'<div class="gd-shop">'+escHtml(grp.shopIcon||'')+' '+escHtml(grp.shopName)+'</div>'
-      +'<div class="gd-host">👤 團主：'+escHtml(grp.hostName)+'</div>'
-      +(grp.announcement?'<div style="margin-top:7px;font-size:.76rem;opacity:.9">📢 '+escHtml(grp.announcement)+'</div>':'')
+      +'<div class="gd-shop">'+(grp.shopIcon||'')+' '+grp.shopName+'</div>'
+      +'<div class="gd-host">👤 團主：'+grp.hostName+'</div>'
+      +(grp.announcement?'<div style="margin-top:7px;font-size:.76rem;opacity:.9">📢 '+grp.announcement+'</div>':'')
       +'<div class="gd-stats">'
         +'<div class="gd-stat"><span class="v">'+orders.length+'</span><span class="l">總訂單</span></div>'
-        +'<div class="gd-stat"><span class="v" style="color:#86efac">'+cnt.linepay+'</span><span class="l">💚 LINE Pay</span></div>'
-        +'<div class="gd-stat"><span class="v" style="color:#fdba74">'+cnt.ipass+'</span><span class="l">💳 iPass</span></div>'
-        +'<div class="gd-stat"><span class="v" style="color:var(--v2-line-strong)">'+cnt.cash+'</span><span class="l">💵 現金</span></div>'
       +'</div>'
       +'<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.18);display:flex;justify-content:space-between;font-size:.84rem;font-weight:900">'
         +'<span>總金額</span>'
@@ -2309,16 +2298,11 @@ function renderGroupDetail(){
 function togglePaid(orderIdx){
   const grp=S.curGroup;
   if(!grp||!grp.orders) return;
-  const o = grp.orders[orderIdx];
-  o.paid = !o.paid;
+  grp.orders[orderIdx].paid = !grp.orders[orderIdx].paid;
   saveG();
+  if(GAS_URL) sendGAS({action:'updateOrderPaid',dateKey:S.selDate,type:S.type,groupIdx:S.curGroupIdx,orderIdx,paid:grp.orders[orderIdx].paid});
   renderGroupDetail();
-  toast(o.paid?'✅ 已標記付款':'已取消付款狀態');
-  if(o._id){
-    updateOrderPaidV2(o._id, o.paid, o.paidMethod||'').then(()=>{
-      loadGroups(S.selDate).then(rerenderCurrentScreen);
-    });
-  }
+  toast(grp.orders[orderIdx].paid?'✅ 已標記付款':'已取消付款狀態');
 }
 
 async function deleteOrder(orderIdx){
@@ -2332,26 +2316,27 @@ async function deleteOrder(orderIdx){
   saveG();
   renderGroupDetail();
   toast('⏳ 刪除中…');
-  if(!o._id){ toast('🗑 已刪除「'+o.name+'」的訂單'); return; }
-  try{
-    const ok = await deleteOrderV2(o._id);
-    if(!ok){
-      // 失敗回滾
+  if(GAS_URL){
+    try{
+      const r = await sendGAS({action:'deleteOrder',dateKey:S.selDate,type:S.type,groupIdx:S.curGroupIdx,orderIdx,name:o.name});
+      if(r && r.success === false){
+        // 失敗回滾
+        grp.orders = backup;
+        saveG();
+        renderGroupDetail();
+        toast('❌ 刪除失敗：'+(r.error||''));
+        return;
+      }
+    }catch(e){
+      console.error(e);
       grp.orders = backup;
       saveG();
       renderGroupDetail();
+      toast('❌ 刪除失敗，已還原');
       return;
     }
-  }catch(e){
-    console.error(e);
-    grp.orders = backup;
-    saveG();
-    renderGroupDetail();
-    toast('❌ 刪除失敗，已還原');
-    return;
   }
   toast('🗑 已刪除「'+o.name+'」的訂單');
-  loadGroups(S.selDate).then(rerenderCurrentScreen);
 }
 
 function deleteGroup(){
@@ -2366,7 +2351,7 @@ function deleteGroup(){
       <div class="cf-title">🗑 確認刪除開團</div>
       <div class="cf-msg">此操作將清除所有訂單，<b>無法復原</b>。<br>請輸入班級密碼確認：</div>
       <input class="cf-pw" id="del-pw-input" type="password" placeholder="輸入班級密碼"
-        maxlength="64" onkeydown="if(event.key==='Enter') confirmDelete()">
+        maxlength="20" onkeydown="if(event.key==='Enter') confirmDelete()">
       <div class="cf-btns">
         <button class="btn btn-out" style="flex:1" onclick="document.getElementById('delete-modal').remove()">取消</button>
         <button class="btn" style="flex:1;background:var(--v2-caramel);color:#fff" onclick="confirmDelete()">確認刪除</button>
@@ -2376,12 +2361,12 @@ function deleteGroup(){
   setTimeout(()=>document.getElementById('del-pw-input')?.focus(), 100);
 }
 
-async function confirmDelete(){
+function confirmDelete(){
   const pw = document.getElementById('del-pw-input')?.value||'';
-  const grpId = S.curGroup?._id;
-  if(grpId){
-    const ok = await deleteGroupV2(grpId, pw);
-    if(!ok) return; // 失敗時 deleteGroupV2 已 toast 錯誤訊息，保留本地資料不動
+  const input = document.getElementById('del-pw-input');
+  if(pw !== PW){
+    if(input){ input.classList.add('err'); input.value=''; input.placeholder='密碼錯誤，請重試'; setTimeout(()=>input.classList.remove('err'),400); }
+    return;
   }
   document.getElementById('delete-modal')?.remove();
   const k=S.selDate;
@@ -2390,10 +2375,10 @@ async function confirmDelete(){
     if(S.groups[k][S.type].length===0) delete S.groups[k][S.type];
   }
   saveG();
+  if(GAS_URL) sendGAS({action:'deleteGroup',dateKey:k,type:S.type,groupIdx:S.curGroupIdx});
   renderDay();
   go('day');
   toast('✅ 已刪除開團');
-  loadGroups(k);
 }
 
 // ═══════════════════════════════════════════════
@@ -2443,19 +2428,16 @@ function fuzzy(q){
   }).filter(x=>x.sc>0).sort((a,b)=>b.sc-a.sc).slice(0,10);
   if(!hits.length){ drop.classList.remove('on'); return; }
   drop.innerHTML=hits.map(({s,i,matched})=>{
-    const sub=matched?`含品項「${hilight(matched,q)}」`:escHtml(s.addr);
+    const sub=matched?`含品項「${hilight(matched,q)}」`:s.addr;
     return `<div class="fitem" onclick="pickShop(${i})">
-      <div class="fi-nm">${hilight(s.name,q)} ${escHtml(s.icon)}</div>
+      <div class="fi-nm">${hilight(s.name,q)} ${s.icon}</div>
       <div class="fi-ad">${sub}</div>
     </div>`;
   }).join('');
   drop.classList.add('on');
 }
 function fScore(q,t){ let sc=0,last=-1; for(const c of q){ const i=t.indexOf(c,last+1); if(i>=0){sc+=1+(i===last+1?1:0);last=i;} } return sc; }
-function hilight(t,q){
-  const chars=new Set(String(q||''));
-  return Array.from(String(t||'')).map(c=>chars.has(c)?`<span class="fhi">${escHtml(c)}</span>`:escHtml(c)).join('');
-}
+function hilight(t,q){ let r=t; for(const c of new Set(q)) r=r.replaceAll(c,`<span class="fhi">${c}</span>`); return r; }
 function fuzzyKey(e){
   const its=[...document.querySelectorAll('.fitem')];
   if(!its.length) return;
@@ -2498,9 +2480,9 @@ function globalFuzzy(q){
   drop.innerHTML=hits.map(({s,i,type,matched})=>{
     const _bcfg = tcfg(type);
     const badge=`<span style="background:${_bcfg.badgeBg};color:var(--v2-caramel);padding:1px 6px;border-radius:8px;font-size:.65rem;font-weight:700;margin-left:4px">${_bcfg.label}</span>`;
-    const sub=matched?`含品項「${hilight(matched,q)}」`:escHtml(s.addr);
+    const sub=matched?`含品項「${hilight(matched,q)}」`:s.addr;
     return `<div class="fitem" onclick="pickShopGlobal('${type}',${i})">
-      <div class="fi-nm">${hilight(s.name,q)} ${escHtml(s.icon||'')}${badge}</div>
+      <div class="fi-nm">${hilight(s.name,q)} ${s.icon||''}${badge}</div>
       <div class="fi-ad">${sub}</div>
     </div>`;
   }).join('');
@@ -2604,13 +2586,17 @@ function parseMenuResult(rawText){
   return { shopName: String(result.shopName||'').trim(), items };
 }
 
-// ── 單張送 Supabase Edge Function 辨識 ──
+// ── 單張送 GAS 辨識 ──
 async function recognizeOneMenuImg(file){
+  if(!GAS_URL) throw new Error('尚未設定 GAS_URL，無法使用拍照辨識');
   const img = await compressMenuImg(file);
-  const {data, error} = await SB.functions.invoke('recognize-menu', {
-    body:{mimeType:img.mimeType, imageBase64:img.base64}
+  const resp = await fetch(GAS_URL,{
+    method:'POST',
+    headers:{'Content-Type':'text/plain'},  // 用 text/plain 避免 GAS CORS preflight
+    body: JSON.stringify({ action:'recognizeMenu', mimeType: img.mimeType, imageBase64: img.base64 })
   });
-  if(error) throw new Error(error.message || '辨識服務連線失敗');
+  if(!resp.ok) throw new Error('HTTP ' + resp.status);
+  const data = await resp.json();
   if(!data.success) throw new Error(data.error || '辨識失敗');
   if(!data.rawText) throw new Error('辨識失敗：沒有回傳內容');
   return parseMenuResult(data.rawText);
@@ -2656,7 +2642,7 @@ async function handleMenuImg(e){
   const ocrSteps = document.getElementById('ocr-steps');
   function setOcrSteps(steps){
     if(ocrSteps) ocrSteps.innerHTML = steps.map(s =>
-      `<div class="ocr-step ${s.st}"><span class="dot"></span>${escHtml(s.txt)}</div>`
+      `<div class="ocr-step ${s.st}"><span class="dot"></span>${s.txt}</div>`
     ).join('');
   }
 
@@ -2669,6 +2655,11 @@ async function handleMenuImg(e){
   }catch(_){}
 
   if(ocrBox) ocrBox.classList.add('on');
+  if(!GAS_URL){
+    setOcrSteps([{st:'',txt:'⚠️ 尚未設定 GAS_URL，無法使用拍照辨識'}]);
+    return;
+  }
+
   const label = n => files.length>1 ? `AI 辨識中… 第 ${n}/${files.length} 張` : 'AI 正在辨識菜單照片…';
   setOcrSteps([{st:'load',txt:label(1)}]);
 
@@ -2724,7 +2715,7 @@ function saveOcrShopModal(detectedName, items){
       <div class="cf-msg">辨識到 <b>${items.length}</b> 個品項。請確認店家資訊：</div>
       <div style="margin-top:12px">
         <div style="font-size:.75rem;font-weight:700;color:var(--ink2);margin-bottom:4px">店名 <span style="color:var(--v2-caramel)">*</span></div>
-        <input id="ocr-name" class="fin" style="padding-left:14px;margin-bottom:10px" placeholder="例：五十嵐 成大店" value="${escHtml(detectedName||'')}">
+        <input id="ocr-name" class="fin" style="padding-left:14px;margin-bottom:10px" placeholder="例：五十嵐 成大店" value="${(detectedName||'').replace(/"/g,'&quot;')}">
         <div style="font-size:.75rem;font-weight:700;color:var(--ink2);margin-bottom:4px">地址（選填）</div>
         <input id="ocr-addr" class="fin" style="padding-left:14px;margin-bottom:10px" placeholder="例：台南市東區育樂街79號">
         <div style="font-size:.75rem;font-weight:700;color:var(--ink2);margin-bottom:4px">電話（選填）</div>
@@ -2747,19 +2738,23 @@ function saveOcrShopModal(detectedName, items){
     if(!name){ toast('請輸入店名'); return; }
     const addr = document.getElementById('ocr-addr').value.trim();
     const tel  = document.getElementById('ocr-tel').value.trim();
-    const classCode = prompt('儲存到全班店家清單需要管理密碼：');
-    if(classCode === null) return;
     close();
     toast('⏳ 儲存中…');
     try{
-      const {data:d, error} = await SB.rpc('save_shop', {
-        p_type:S.type, p_name:name, p_addr:addr, p_tel:tel, p_icon:defaultIcon,
-        p_items:items.map(it=>({name:it.name, price:it.price, cat:it.cat})),
-        p_class_code:classCode
+      const resp = await fetch(GAS_URL,{
+        method:'POST',
+        headers:{'Content-Type':'text/plain'},
+        body: JSON.stringify({
+          action:'saveShop',
+          type: S.type, name, addr, tel, icon: defaultIcon,
+          items: items.map(it=>({name:it.name, price:it.price, cat:it.cat}))
+        })
       });
-      if(error) throw error;
+      const d = await resp.json();
+      if(!d.success) throw new Error(d.error||'儲存失敗');
       toast(`✅ 已儲存 ${d.added} 項到店家清單`);
-      await loadMenus();
+      // 重新同步菜單
+      await syncMenus();
     }catch(err){
       console.error('saveShop error:', err);
       toast('⚠️ 儲存失敗：' + err.message);
@@ -2807,14 +2802,17 @@ async function deletePresetShop(idx){
   const shop = list[idx];
   if(!shop) return;
   if(!confirm(`確定要刪除「${shop.name}」？\n此店家的所有品項會從資料庫移除,無法復原。`)) return;
-  const classCode = prompt('請輸入班級管理密碼：');
-  if(classCode === null) return;
   toast('⏳ 刪除中…');
   try{
-    const {data:d, error} = await SB.rpc('delete_shop', {p_shop_id:shop.id, p_class_code:classCode});
-    if(error) throw error;
-    toast('✅ 已刪除');
-    await loadMenus();
+    const resp = await fetch(GAS_URL,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({action:'deleteShop', type: S.type, name: shop.name})
+    });
+    const d = await resp.json();
+    if(!d.success) throw new Error(d.error||'刪除失敗');
+    toast(`✅ 已刪除(${d.deleted} 列)`);
+    await syncMenus();
     goPresets();
   }catch(err){
     toast('⚠️ 刪除失敗：'+err.message);
@@ -2828,14 +2826,17 @@ async function renamePresetShop(idx){
   if(!shop) return;
   const newName = prompt(`輸入新的店家名稱：`, shop.name);
   if(!newName || newName.trim()===''||newName.trim()===shop.name) return;
-  const classCode = prompt('請輸入班級管理密碼：');
-  if(classCode === null) return;
   toast('⏳ 更新中…');
   try{
-    const {error} = await SB.rpc('rename_shop', {p_shop_id:shop.id, p_new_name:newName.trim(), p_class_code:classCode});
-    if(error) throw error;
-    toast('✅ 已改名');
-    await loadMenus();
+    const resp = await fetch(GAS_URL,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({action:'renameShop', type: S.type, oldName: shop.name, newName: newName.trim()})
+    });
+    const d = await resp.json();
+    if(!d.success) throw new Error(d.error||'更新失敗');
+    toast(`✅ 已改名(${d.renamed} 列)`);
+    await syncMenus();
     goPresets();
   }catch(err){
     toast('⚠️ 改名失敗：'+err.message);
@@ -2848,6 +2849,8 @@ async function handlePresetMenuImg(e){
   const files = Array.from(e.target.files||[]);
   e.target.value = '';   // 清掉 value 讓同一批檔案能再次觸發
   if(!files.length) return;
+  if(!GAS_URL){ toast('⚠️ 尚未設定 GAS_URL'); return; }
+
   // 先鎖住目標：辨識期間可能有別的操作把 S._updateShopTarget 蓋掉
   const target = S._updateShopTarget;
   S._updateShopTarget = null;
@@ -2891,10 +2894,10 @@ function updateShopMenuModal(shop, items){
   m.className = 'cf-modal';
   m.innerHTML = `
     <div class="cf-sheet" style="max-width:380px">
-      <div class="cf-title">📸 更新「${escHtml(shop.name)}」菜單</div>
+      <div class="cf-title">📸 更新「${shop.name}」菜單</div>
       <div class="cf-msg">辨識到 <b>${items.length}</b> 個品項，將<b>取代</b>此店家的所有現有品項。</div>
       <div style="max-height:280px;overflow-y:auto;margin:12px 0;padding:8px;background:var(--bg);border-radius:8px;font-size:.76rem">
-        ${items.map(it=>'<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bdr)"><span>'+escHtml(it.name)+(it.cat?' <span style="color:var(--ink3);font-size:.65rem">'+escHtml(it.cat)+'</span>':'')+'</span><span style="color:var(--v2-caramel);white-space:nowrap;margin-left:8px">NT$'+Number(it.price||0)+'</span></div>').join('')}
+        ${items.map(it=>'<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bdr)"><span>'+it.name+(it.cat?' <span style="color:var(--ink3);font-size:.65rem">'+it.cat+'</span>':'')+'</span><span style="color:var(--v2-caramel);white-space:nowrap;margin-left:8px">NT$'+it.price+'</span></div>').join('')}
       </div>
       <div style="font-size:.72rem;color:var(--ink2);text-align:center">共 ${items.length} 個品項，確認後將全部取代舊菜單</div>
       <div style="display:flex;flex-direction:column;gap:8px">
@@ -2904,19 +2907,22 @@ function updateShopMenuModal(shop, items){
     </div>`;
   document.body.appendChild(m);
   document.getElementById('usm-confirm').onclick = async ()=>{
-    const classCode = prompt('更新全班店家菜單需要管理密碼：');
-    if(classCode === null) return;
     m.remove();
     toast('⏳ 更新中…');
     try{
-      const {data:d, error} = await SB.rpc('save_shop', {
-        p_type:shop.type, p_name:shop.name, p_addr:shop.addr, p_tel:shop.tel, p_icon:shop.icon,
-        p_items:items.map(it=>({name:it.name, price:it.price, cat:it.cat})),
-        p_class_code:classCode
+      const resp = await fetch(GAS_URL,{
+        method:'POST',
+        headers:{'Content-Type':'text/plain'},
+        body: JSON.stringify({
+          action:'saveShop', type: shop.type, name: shop.name,
+          addr: shop.addr, tel: shop.tel, icon: shop.icon,
+          items: items.map(it=>({name:it.name, price:it.price, cat:it.cat}))
+        })
       });
-      if(error) throw error;
+      const d = await resp.json();
+      if(!d.success) throw new Error(d.error||'更新失敗');
       toast('✅ 已更新「'+shop.name+'」菜單（'+d.added+' 項）');
-      await loadMenus();
+      await syncMenus();
       goPresets();
     }catch(err){
       toast('⚠️ 更新失敗：'+err.message);
@@ -2969,16 +2975,16 @@ function renderSetup0(w){
   document.getElementById('setup-t').textContent='AI 抓取菜單中…';
   w.innerHTML=`
     <div class="ssb">
-      <div class="ssb-ico">${escHtml(S.shopSel?.icon||'🏪')}</div>
+      <div class="ssb-ico">${S.shopSel?.icon||'🏪'}</div>
       <div class="ssb-info">
-        <div class="ssb-nm">${escHtml(S.shopSel?.name)}</div>
-        <div class="ssb-ad">${escHtml(S.shopSel?.addr||'')}</div>
+        <div class="ssb-nm">${S.shopSel?.name}</div>
+        <div class="ssb-ad">${S.shopSel?.addr||''}</div>
       </div>
       <button class="ssb-chg" onclick="go('s-shop')">換店家</button>
     </div>
     <div class="aibox">
       <div class="ai-shop">
-        <span class="spin"></span> 正在搜尋「${escHtml(S.shopSel?.name)}」菜單…
+        <span class="spin"></span> 正在搜尋「${S.shopSel?.name}」菜單…
       </div>
       <div class="ai-steps" id="ai-steps">
         <div class="aist load"><span class="dot"></span>連線至 Google AI 搜尋服務…</div>
@@ -2992,10 +2998,10 @@ function renderSetup1(w){
   document.getElementById('setup-t').textContent='確認菜單 & 開團資訊';
   w.innerHTML=`
     <div class="ssb">
-      <div class="ssb-ico">${escHtml(S.shopSel?.icon||'🏪')}</div>
+      <div class="ssb-ico">${S.shopSel?.icon||'🏪'}</div>
       <div class="ssb-info">
-        <div class="ssb-nm">${escHtml(S.shopSel?.name)}</div>
-        <div class="ssb-ad">${escHtml(S.shopSel?.addr||'')}</div>
+        <div class="ssb-nm">${S.shopSel?.name}</div>
+        <div class="ssb-ad">${S.shopSel?.addr||''}</div>
       </div>
       <button class="ssb-chg" onclick="go('s-shop')">換店家</button>
     </div>
@@ -3014,11 +3020,11 @@ function renderSetup1(w){
     </div>
 
     <div class="sect" style="margin-top:16px">團主姓名</div>
-    <input class="fin" style="padding-left:14px;margin-bottom:4px" id="h-nm" placeholder="請輸入您的姓名" value="${escHtml(S.hostName||'')}">
+    <input class="fin" style="padding-left:14px;margin-bottom:4px" id="h-nm" placeholder="請輸入您的姓名" value="${S.hostName||''}">
 
     <div class="sect" style="margin-top:14px">📢 開團公告（選填）</div>
     <textarea class="fin" style="padding-left:14px;resize:none;height:70px;margin-bottom:4px" id="h-ann"
-      placeholder="說明開團原因、截止時間、特殊注意事項…&#10;例如：今天午餐一起訂五十嵐！12:00截止">${escHtml(S.announcement||'')}</textarea>
+      placeholder="說明開團原因、截止時間、特殊注意事項…&#10;例如：今天午餐一起訂五十嵐！12:00截止">${S.announcement||''}</textarea>
     <div style="font-size:.68rem;color:var(--ink3);margin-bottom:4px">💡 有填寫才會顯示給同學看</div>
 
     <button class="btn btn-dk btn-full mt12" onclick="finishSetup()">
@@ -3029,7 +3035,8 @@ function renderSetup1(w){
 function renderMItems(){
   return S.aiMenu.map((item,i)=>
     `<div class="mi">
-      <div class="mi-info"><div class="mi-nm">${escHtml(item.name)}</div><div class="mi-cat">${escHtml(item.cat||'')}</div></div>
+      <div style="width:42px;height:42px;border-radius:9px;background:var(--bg);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;font-size:1.35rem">${item.imgUrl?`<img src="${item.imgUrl}" alt="" style="width:100%;height:100%;object-fit:cover">`:(item.icon||S.shopSel?.icon||'🍽️')}</div>
+      <div class="mi-info"><div class="mi-nm">${item.name}</div><div class="mi-cat">${item.cat||''}</div></div>
       <div class="mi-p">NT$${item.price}</div>
       <button class="mi-del" onclick="delItem(${i})">✕</button>
     </div>`
@@ -3077,20 +3084,13 @@ function handleQr(e){ const f=e.target.files[0]; if(!f)return; const r=new FileR
 // ═══════════════════════════════════════════════
 async function runAI(){
   const shop = S.shopSel;
+  const isDr = S.type === 'drink';
 
   function setSteps(steps){
     const el = document.getElementById('ai-steps');
     if(el) el.innerHTML = steps.map(s =>
-      `<div class="aist ${s.st}"><span class="dot"></span>${escHtml(s.txt)}</div>`
+      `<div class="aist ${s.st}"><span class="dot"></span>${s.txt}</div>`
     ).join('');
-  }
-
-  // 精選店家的完整菜單已由 Supabase 載入，不再繞 GAS 或額外呼叫付費模型。
-  if(Array.isArray(shop?.menu)){
-    S.aiMenu = shop.menu.map(it => ({name:it.name, price:Number(it.price)||0, cat:it.cat||''}));
-    setSteps([{st:'done',txt:`✅ 已載入 ${S.aiMenu.length} 個品項`}]);
-    await new Promise(r=>setTimeout(r,250));
-    S.setupStep = 1; renderSetup(); return;
   }
 
   // ★ 改成呼叫 GAS（伺服器端），GAS 再去呼叫 Anthropic API
@@ -3127,7 +3127,7 @@ async function runAI(){
     console.error('runAI error:', err.message);
     const el = document.getElementById('ai-steps');
     if(el) el.innerHTML = `
-      <div class="aist"><span class="dot"></span>⚠️ ${escHtml((err.message||'搜尋失敗').slice(0,80))}</div>
+      <div class="aist"><span class="dot"></span>⚠️ ${(err.message||'搜尋失敗').slice(0,80)}</div>
       <div class="aist" style="color:rgba(245,240,232,.38)">可在下方手動新增品項</div>`;
     S.aiMenu = [];
     await new Promise(r=>setTimeout(r,1000));
@@ -3148,50 +3148,40 @@ async function doCreate(){
   if(!S.groups[k][S.type]) S.groups[k][S.type]=[];
   const grp={
     type:S.type, hostName:S.hostName, announcement:S.announcement||'',
-    clientGroupId:newClientOrderId(),
-    shopId:S.shopSel.id||null, shopName:S.shopSel.name, shopAddr:S.shopSel.addr, shopIcon:S.shopSel.icon||'🏪', shopTel:S.shopSel.tel||'',
+    shopName:S.shopSel.name, shopAddr:S.shopSel.addr, shopIcon:S.shopSel.icon||'🏪', shopTel:S.shopSel.tel||'',
     menu:S.aiMenu, payMethod:S.payMethod, payLink:S.payLink, ipassLink:S.ipassLink||'', payQr:'',
     orders:[], createdAt:new Date().toISOString()
   };
   S.groups[k][S.type].push(grp); saveG();
   S.curGroupIdx = S.groups[k][S.type].length - 1;
 
-  toast('⏳ 同步到雲端…');
-  const r = await createGroupV2(k, S.type, S.shopSel||{}, grp.payMethod, grp.payLink, grp.ipassLink, grp.announcement, grp.clientGroupId);
-  if(!r){
-    // ★ Task 17 修正：createGroupV2 內部已經依失敗原因顯示了明確的 toast
-    //   （身分失效／或帶著真正 error.message 的具體訊息），這裡不再疊加一句
-    //   蓋掉真正原因的「⚠️ 雲端同步失敗」——toast() 同步呼叫會直接互相覆蓋，
-    //   使用者原本永遠只看得到這裡最後蓋上去、且在身分失效時根本是誤導的訊息。
-    if (!ME) {
-      // 身分已經被判定失效、快取已清掉、畫面已經切去重新選名字：
-      // 這團不標記待重試（用舊身分重試必然再次因外鍵違反失敗），
-      // 也不要往下把畫面切回 day，蓋掉剛剛的導轉。
-      return;
-    }
-    // ★ Task 15 修正：開團 RPC 失敗時（非身分問題，例如網路），把這個本地團標記成
-    //   「待重試建團」，讓 retryPendingOrders() 認得並在背景自動補建立。
-    //   不整團砍掉——使用者可能已經開始設定內容，畫面照舊放行，體驗維持現況。
-    grp._pendingCreate = true;
-    updatePendingBanner();
-  } else {
-    // ★ 直接採用後端回傳的真實 group_idx/group_id,不把正確性寄託在之後的 loadGroups。
-    if(typeof r.group_idx === 'number'){
-      grp.groupIdx = r.group_idx;
-      grp._id = r.group_id;
-      S.curGroupIdx = r.group_idx;
-      // 若本地陣列位置與雲端 idx 不一致,補位讓 array[idx] 指向這個團
-      const arr = S.groups[k]?.[S.type] || [];
-      const localIdx = arr.findIndex(g => g && g.createdAt === grp.createdAt);
-      if(localIdx >= 0 && localIdx !== r.group_idx){
-        arr.splice(localIdx, 1);
-        while(arr.length < r.group_idx) arr.push(null);
-        arr[r.group_idx] = grp;
+  if(GAS_URL){
+    toast('⏳ 同步到雲端…');
+    const r = await sendGAS({action:'createGroup',dateKey:k,type:S.type,groupIdx:S.curGroupIdx,group:{...grp,payQr:''}});
+    if(!r.success){
+      toast('⚠️ 雲端同步失敗,本地已儲存');
+    } else {
+      // ★ 直接採用後端回傳的真實 groupIdx,不把正確性寄託在之後的 syncGAS。
+      //   後端 actionCreateGroup 會自算下一個可用 idx 並回傳 r.groupIdx;先用它把本地團與 curGroupIdx 對齊,
+      //   這樣即使強制同步被吞掉/延遲,下一筆訂單也一定送進正確的團(修 single-flight 吞掉 forced sync 的連帶風險)。
+      if(typeof r.groupIdx === 'number'){
+        grp.groupIdx = r.groupIdx;
+        S.curGroupIdx = r.groupIdx;
+        // 若本地陣列位置與雲端 idx 不一致,補位讓 array[idx] 指向這個團
+        const arr = S.groups[k]?.[S.type] || [];
+        const localIdx = arr.findIndex(g => g && g.createdAt === grp.createdAt);
+        if(localIdx >= 0 && localIdx !== r.groupIdx){
+          arr.splice(localIdx, 1);
+          while(arr.length < r.groupIdx) arr.push(null);
+          arr[r.groupIdx] = grp;
+        }
+        saveG();
       }
-      saveG();
+      // 再背景同步一次對齊其他裝置的資料(非阻塞正確性,吞掉也無妨)
+      if(typeof syncGAS === 'function') syncGAS(true);
+      toast('🎉 開團成功！');
     }
-    // 再背景重新讀一次，對齊 Supabase 上其他裝置的最新資料
-    loadGroups(k);
+  } else {
     toast('🎉 開團成功！');
   }
   renderDay();
@@ -3237,12 +3227,12 @@ function renderOrderPage(){
   let existHtml = '';
   if(existing.length>0){
     const rows = existing.map((o,oi)=>{
-      const items = (o.items||[]).map(it=>escHtml(it.name)+'×'+Number(it.qty||0)).join('、');
+      const items = (o.items||[]).map(it=>it.name+'×'+it.qty).join('、');
       const pmIco = o.paidMethod==='linepay'?'💚':o.paidMethod==='ipass'?'💳':o.paidMethod==='cash'?'💵':'';
       const oTotal = calcOrderTotal(o);
       return '<div style="display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px dashed rgba(255,255,255,.15);font-size:.76rem">'
         +'<div style="flex:1;min-width:0">'
-          +'<div style="font-weight:900">👤 '+escHtml(o.name)+(pmIco?' '+pmIco:'')+'</div>'
+          +'<div style="font-weight:900">👤 '+o.name+(pmIco?' '+pmIco:'')+'</div>'
           +'<div style="opacity:.85;font-size:.72rem;margin-top:2px;line-height:1.5;word-break:break-all">'+items+'</div>'
         +'</div>'
         +'<div style="text-align:right;font-weight:900;font-family:\'DM Mono\',monospace;white-space:nowrap">NT$'+oTotal+'</div>'
@@ -3261,10 +3251,10 @@ function renderOrderPage(){
 
   wrap.innerHTML=`
     <div class="ohero ${cfg.heroClass}">
-      <div class="oh-shop">${escHtml(grp.shopIcon||'')} ${escHtml(grp.shopName)}</div>
-      <div class="oh-host">👤 團主：${escHtml(grp.hostName)}</div>
+      <div class="oh-shop">${grp.shopIcon||''} ${grp.shopName}</div>
+      <div class="oh-host">👤 團主：${grp.hostName}</div>
       ${existHtml}
-      ${grp.announcement?'<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.15);font-size:.78rem;line-height:1.65">📢 '+escHtml(grp.announcement)+'</div>':''}
+      ${grp.announcement?'<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.15);font-size:.78rem;line-height:1.65">📢 '+grp.announcement+'</div>':''}
     </div>
 
     <div class="sect">訂購人</div>
@@ -3279,12 +3269,12 @@ function renderOrderPage(){
       <div class="v2-selwrap">
         <button type="button" class="v2-sel" id="ord-nm-trigger"
                 style="text-align:left;${muted}"
-                onclick="openMemberPicker()">${escHtml(displayText)}</button>
+                onclick="openMemberPicker()">${displayText}</button>
         <svg class="v2-sel-caret" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
       <input class="v2-sel-input" id="ord-nm" style="display:${isOther?'block':'none'}"
         placeholder="輸入被代點人的姓名"
-        value="${escHtml(curName)}"
+        value="${curName}"
         oninput="S.persons[S.activePerson].name=this.value;refreshMemberTrigger();">`;
     })()}
 
@@ -3296,7 +3286,7 @@ function renderOrderPage(){
     <div class="sect">備註</div>
     <textarea class="v2-sel-input" style="min-height:60px;resize:vertical;font-family:var(--v2-sans);line-height:1.5" id="ord-note"
       placeholder="其他特殊需求（選填）"
-      onchange="S.persons[0].note=this.value">${escHtml(p?.note||'')}</textarea>
+      onchange="S.persons[0].note=this.value">${p?.note||''}</textarea>
   `;
   renderOList();
   renderCartSummary();
@@ -3316,7 +3306,7 @@ function buildPersonTabs(){
       ? '<span class="opt-close" onclick="event.stopPropagation();removePerson('+i+')" aria-label="移除">✕</span>'
       : '';
     return '<button class="opt '+(isActive?'active':'')+' '+(hasItem?'has-item':'')
-      +'" onclick="switchPerson('+i+')">'+escHtml(label)+closeBtn+'</button>';
+      +'" onclick="switchPerson('+i+')">'+label+closeBtn+'</button>';
   }).join('');
 }
 
@@ -3484,9 +3474,10 @@ function renderOList(){
     const cups=cart[i]||[];
     const q=cups.length;
     return `<div class="oi ${q>0?'sel':''}" id="oi-${i}">
+      <div style="width:42px;height:42px;border-radius:9px;background:var(--bg);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;font-size:1.35rem">${item.imgUrl?`<img src="${item.imgUrl}" alt="" style="width:100%;height:100%;object-fit:cover">`:(item.icon||S.curGroup.shopIcon||'🍽️')}</div>
       <div class="oi-info">
-        <div class="oi-nm">${escHtml(item.name)}</div>
-        <div class="oi-cat">${escHtml(item.cat||'')}</div>
+        <div class="oi-nm">${item.name}</div>
+        <div class="oi-cat">${item.cat||''}</div>
       </div>
       <div class="oi-right">
         <div class="oi-p">NT$${item.price}</div>
@@ -3512,7 +3503,7 @@ function openCupModal(itemIdx){
   modal.id='cup-modal'; modal.className='modal-overlay';
   modal.innerHTML=`
     <div class="modal-sheet">
-      <div class="modal-title">☕ ${escHtml(item.name)}</div>
+      <div class="modal-title">☕ ${item.name}</div>
       <div class="modal-sub">NT$${item.price}｜請選擇甜度和冰塊</div>
       <div class="opt-group">
         <div class="opt-group-label">🍬 甜度</div>
@@ -3599,7 +3590,7 @@ function renderCartSummary(){
   if(!lines.length){ el.innerHTML=''; return; }
   el.innerHTML=`<div style="background:var(--goldbg);border:1.5px solid var(--gold);border-radius:var(--r2);padding:10px 13px;font-size:.76rem;line-height:1.8">
     <div style="font-size:.67rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:4px">🛒 已選</div>
-    ${lines.map(function(l){return '<div>• '+escHtml(l)+'</div>';}).join('')}
+    ${lines.map(function(l){return '<div>• '+l+'</div>';}).join('')}
   </div>`;
 }
 
@@ -3677,8 +3668,6 @@ function leaveOrderScreen(){
 // CONFIRM & SUBMIT
 // ═══════════════════════════════════════════════
 function goConfirm(){
-  // 每次進入確認頁清掉上次暫存，強制重新選擇
-  S._pendingPayMethod = null;
   // Save current note
   const noteEl = document.getElementById('ord-note');
   if(noteEl) S.persons[S.activePerson].note = noteEl.value;
@@ -3724,22 +3713,16 @@ function goConfirm(){
   // Multi-person confirm UI
   const orderCards = allPersonSummary.map(p=>`
     <div class="sc" style="margin-bottom:8px">
-      <div class="sc-hd">👤 ${escHtml(p.name)}</div>
-      ${p.items.map(function(it){return '<div class="sc-row"><span><span class="sc-q">'+Number(it.qty||0)+'×</span>'+escHtml(it.name)+'</span><span class="sc-p">NT$'+Number(it.sub||0)+'</span></div>';}).join('')}
-      ${p.note?`<div class="sc-row"><span>備註</span><span style="font-size:.74rem;color:var(--ink2)">${escHtml(p.note)}</span></div>`:''}
+      <div class="sc-hd">👤 ${p.name}</div>
+      ${p.items.map(function(it){return '<div class="sc-row"><span><span class="sc-q">'+it.qty+'×</span>'+it.name+'</span><span class="sc-p">NT$'+it.sub+'</span></div>';}).join('')}
+      ${p.note?`<div class="sc-row"><span>備註</span><span style="font-size:.74rem;color:var(--ink2)">${p.note}</span></div>`:''}
       <div class="sc-tot"><span>小計</span><span class="sc-ta">NT$${p.total}</span></div>
     </div>`).join('');
 
   document.getElementById('cf-wrap').innerHTML=`
     ${orderCards}
     ${allPersonSummary.length>1?`<div style="background:var(--bg);border-radius:var(--r2);padding:12px 15px;display:flex;justify-content:space-between;font-weight:900;font-size:1rem;margin-bottom:12px"><span>合計 ${allPersonSummary.length} 人</span><span style="color:var(--v2-caramel);font-family:'DM Mono',monospace">NT$${grandTotal}</span></div>`:''}
-    <div class="paybox">
-      <div class="pb-t">💳 付款給團主 ${escHtml(grp.hostName)}</div>
-      <div class="pb-a">NT$${grandTotal}</div>
-      <div class="pb-s">點一下付款方式即完成選定，接著<b>一定要按「✅ 確認送出所有訂單」</b>，訂單才會真的送出</div>
-      <div id="pay-choice-area" style="display:flex;flex-direction:column;align-items:center;gap:8px">${simplePayBtns()}</div>
-    </div>
-    <div class="ibox i-ok">✅ 確認金額與付款方式無誤後送出</div>
+    <div class="ibox i-ok">✅ 確認訂單內容與金額後送出</div>
     <button class="btn btn-dk btn-full" onclick="doSubmitAll()">✅ 確認送出所有訂單</button>
     <button class="btn btn-out btn-full mt8" onclick="go('order')">← 返回修改</button>`;
   const cfa = document.getElementById('cf-fbar-a');
@@ -3905,11 +3888,12 @@ async function undoCommitPay(btn){
     }
   });
   saveG();
-  // 同步 Supabase
-  await Promise.all(ctx.idxs.map(i =>
-    grp.orders[i]?._id ? updateOrderPaidV2(grp.orders[i]._id, false, '') : Promise.resolve(false)
-  ));
-  loadGroups(S.selDate).then(rerenderCurrentScreen);
+  // 同步 GAS
+  if(GAS_URL){
+    await Promise.all(ctx.idxs.map(i =>
+      sendGAS({action:'updateOrderPaid', dateKey:S.selDate, type:S.type, groupIdx:S.curGroupIdx, orderIdx:i, paid:false, paidMethod:''})
+    ));
+  }
   // 重新渲染按鈕區 (注意 confirmAllPayments 第一個參數是陣列,confirmMyPayment 是 number)
   const area = document.getElementById('pay-choice-area');
   if(area){
@@ -3968,12 +3952,6 @@ async function doSubmitAll(){
   if(S._submitting) return;
   const pendingOrders = S._pendingOrders || [];
   if(!pendingOrders.length){ toast('沒有待送出的訂單'); return; }
-  if(!S._pendingPayMethod){
-    toast('⚠️ 請先選擇付款方式');
-    const area = document.getElementById('pay-choice-area');
-    if(area) area.scrollIntoView({behavior:'smooth',block:'center'});
-    return;
-  }
   S._submitting = true;
   // 立即鎖定送出按鈕，避免重複點擊
   const submitBtn = document.querySelector('#s-confirm button.btn-dk');
@@ -3983,7 +3961,7 @@ async function doSubmitAll(){
   grp.orders = grp.orders||[];
   const ts = new Date().toLocaleString('zh-TW',{timeZone:'Asia/Taipei'});
   const myOrderIdxs = [];
-  const payMethod = S._pendingPayMethod;
+  const payMethod = '未指定';
 
   const toSend = [];
   pendingOrders.forEach(p=>{
@@ -3992,13 +3970,8 @@ async function doSubmitAll(){
     if(existIdx >= 0){
       // ★ 同名合併：把新品項併入既有訂單，qty 累加
       const existing = grp.orders[existIdx];
-      // ★ 修正(2026-08-25 審查發現)：existing._id 存在代表雲端已經有這筆訂單，
-      //   要改呼叫 editOrderV2 整批取代成 combinedItems——Supabase 的 edit_order RPC
-      //   語意是整批取代，不是後端 GAS 版本那種「新增品項」，所以這裡不能再只送
-      //   本次新增的 p.items（那樣會把雲端上的舊品項洗掉），必須一律送完整的 combinedItems。
-      //   existing._id 不存在代表前一筆還沒同步成功，雲端還沒有這筆訂單可以編輯，
-      //   只能繼續呼叫 submitOrderV2 新增，一樣送 combinedItems（沿用原本 wasPending 的邏輯）。
-      const existingId = existing._id || null;
+      // ★ 重要：在覆寫 existing._pendingSync 前先記錄前一次是不是 pending
+      const wasPending = !!existing._pendingSync;
       const combinedItems = mergeSameNameItems([...(existing.items||[]), ...(p.items||[])]);
       const newTotal = combinedItems.reduce((s,it)=>s+calcItemSub(it),0);
       existing.items = combinedItems;
@@ -4007,22 +3980,19 @@ async function doSubmitAll(){
       existing.paidMethod = payMethod;
       if(p.note) existing.note = p.note;
       existing.ts = ts;
-      existing.clientOrderId = existing.clientOrderId || newClientOrderId();
       existing._pendingSync = true; // 雲端尚未確認
-      // ★ Fix round 1（Task 15 審查發現）：同時設定 _lastRetryAt，讓下面背景送出
-      //   還在飛的空窗期，retryPendingOrders() 既有的 10 秒節流會自然擋住重複送單，
-      //   不需要另外發明節流機制。
-      existing._lastRetryAt = Date.now();
       myOrderIdxs.push(existIdx);
-      toSend.push({name:p.name, total:newTotal, note:p.note||existing.note||'', items:combinedItems, paid:true, paidMethod:payMethod, ts, existingId, clientOrderId:existing.clientOrderId});
+      // ★ 修法：若前一筆 pending 還沒同步成功，這次必須送 combined（含舊 pending 的 items），
+      //         否則 _pendingPayload 被覆寫後舊 items 永遠不會送上雲端，造成資料遺失。
+      //         若前一筆已同步成功，仍只送本次新增的 items（讓後端用不同 cid 追加，避免重複）。
+      const itemsToSend = wasPending ? combinedItems : p.items;
+      toSend.push({name:p.name, total:newTotal, note:p.note||existing.note||'', items:itemsToSend, paid:true, paidMethod:payMethod, ts});
     } else {
       // 首次下單：照舊新建
-      // ★ Fix round 1（Task 15 審查發現）：新單同樣要在標記 _pendingSync 的同時
-      //   設定 _lastRetryAt，理由同上（existing 分支）。
-      const order={name:p.name, total:p.total, note:p.note, items:p.items, paid:true, paidMethod:payMethod, ts, clientOrderId:newClientOrderId(), _pendingSync:true, _lastRetryAt:Date.now()};
+      const order={name:p.name, total:p.total, note:p.note, items:p.items, paid:true, paidMethod:payMethod, ts, _pendingSync:true};
       grp.orders.push(order);
       myOrderIdxs.push(grp.orders.length-1);
-      toSend.push({...order, existingId:null});
+      toSend.push(order);
     }
   });
   saveG();
@@ -4043,40 +4013,46 @@ async function doSubmitAll(){
   renderDoneAll(pendingOrders, myOrderIdxs, payMethod);
   go('s-done');
 
-  // ★ Task 11：改呼叫 submitOrderV2（Supabase RPC），不再送 GAS。
-  //   grp._id 是 Task 10 loadGroups() 灌回來的真正 Supabase group id（不是本地 groupIdx）。
-  //   submit_order RPC 內部自己配 client_order_id 去重，這裡不需要再手刻 payload/_pendingPayload。
-  if(grp._id){
+  if(GAS_URL){
+    // 每筆訂單配一個 clientOrderId — ★ 每次送出都產新的，避免「同人重複下單」第二次重用第一次未同步的 cid 被當 idempotent 跳過
     Promise.all(toSend.map((order, k) => {
       const oi = myOrderIdxs[k];
-      // ★ 修正(2026-08-25)：existingId 存在時改呼叫 editOrderV2（整批取代雲端既有訂單），
-      //   不是呼叫 submitOrderV2 再新增一筆——否則會產生重複訂單、遺失原本的 _id 追蹤。
-      //   edit_order RPC 的回應沒有 order_id 欄位（只有 {success,total}），所以寫回 _id 時
-      //   要 fallback 用 existingId，不能讓 _id 被洗成 undefined。
-      const call = order.existingId
-        ? editOrderV2(order.existingId, order.items, order.note || '', true, payMethod)
-        : submitOrderV2(grp._id, order.items, order.name, order.note || '', true, payMethod, order.clientOrderId);
-      return call.then(result => {
-        if(result && grp.orders[oi]){
-          const orderId = result.order_id || order.existingId;
-          grp.orders[oi]._id = orderId;
-          delete grp.orders[oi]._pendingSync;
-        }
-        return result;
-      });
-    })).then(results => {
+      const cid = generateClientOrderId();
+      // ★ payload.order 必須是快照，不能直接放 grp.orders[oi] 本身。
+      //   下面會把 payload 掛回該 order，若放本體就形成循環參照，JSON.stringify 會直接拋錯。
+      // ★ paid/paidMethod 一併帶上：後端 submitOrder 現在會直接寫付款狀態，
+      //   不必再補送一輪 updateOrderPaid（省掉整整一次序列 GAS 往返，送單時間砍半）。
+      const payload = {action:'submitOrder', dateKey:S.selDate, type:S.type, groupIdx:S.curGroupIdx,
+        order:{name:order.name, items:order.items, total:order.total, note:order.note, ts:order.ts,
+               paid:order.paid, paidMethod:order.paidMethod},
+        clientOrderId:cid};
+      if(grp.orders[oi]){
+        grp.orders[oi]._clientOrderId = cid;
+        grp.orders[oi]._pendingPayload = payload;
+      }
+      return sendGAS(payload);
+    })).then(submitResults => {
       saveG();
-      const allOk = results.every(r => r);
-      if(!allOk) console.warn('doSubmitAll: 部分訂單送出失敗', results);
+      let allSyncOk = true;
+      submitResults.forEach(r => { if(!r || r.success === false) allSyncOk = false; });
+      if(allSyncOk){
+        // 雲端確認成功 → 清掉所有 pending 標記
+        myOrderIdxs.forEach(i => {
+          if(grp.orders[i]){
+            delete grp.orders[i]._pendingSync;
+            delete grp.orders[i]._pendingPayload;
+            delete grp.orders[i]._clientOrderId;
+          }
+        });
+        saveG();
+      }
+      // 失敗的話留著 _pendingSync + _pendingPayload 不動，交給 retryPendingOrders 自動重送
       updatePendingBanner();
       S._lastWriteAt = Date.now(); // 延長保護窗
-      loadGroups(S.selDate).then(rerenderCurrentScreen);
     }).catch(err=>{
       console.warn('doSubmitAll background sync error:', err && err.message);
       updatePendingBanner();
     });
-  } else {
-    console.warn('doSubmitAll: grp._id 缺失，無法送 RPC（此團可能尚未同步到 Supabase）');
   }
 }
 
@@ -4092,8 +4068,8 @@ function showSyncFailedModal({pendingOrders, myOrderIdxs, payMethod, firstError}
     <div class="cf-sheet">
       <div class="cf-title">⚠️ 雲端同步失敗</div>
       <div class="cf-msg" style="text-align:left">
-        <div style="margin-bottom:8px"><b>${escHtml(names || '訂單')}</b> 已暫存在本地，<b>雲端尚未收到</b>。</div>
-        <div style="font-size:.82rem;color:var(--ink2);margin-bottom:8px">原因：${escHtml(firstError||'網路錯誤')}</div>
+        <div style="margin-bottom:8px"><b>${names || '訂單'}</b> 已暫存在本地，<b>雲端尚未收到</b>。</div>
+        <div style="font-size:.82rem;color:var(--ink2);margin-bottom:8px">原因：${firstError||'網路錯誤'}</div>
         <div style="font-size:.82rem;color:var(--ink2)">系統會自動每幾秒嘗試重送一次；也可以立刻點下方按鈕重試。<br>請<b>不要關閉此頁面</b>直到顯示「同步成功」為止。</div>
       </div>
       <div class="cf-btns" style="flex-direction:column;gap:8px">
@@ -4132,15 +4108,11 @@ function renderDoneAll(pendingOrders, myOrderIdxs, payMethod, synced){
   const _dnT=document.getElementById('dn-title');
   if(_dnT) _dnT.textContent = (synced===false) ? '尚未送達 ⏳' : '完成 🎉';
   const grandTotal=pendingOrders.reduce((s,p)=>s+p.total,0);
-  const pmLabel = payMethodLabel(payMethod||'');
-  const pmIco = payMethod==='linepay'?'💚':payMethod==='ipass'?'💳':payMethod==='cash'?'💵':'';
-  const pmBg = payMethod==='linepay'?'#06c755':payMethod==='ipass'?'#ee7000':'var(--v2-accent)';
-  const pmFg = payMethod==='cash'?'var(--v2-ink)':'#fff';
   const receiptCards = pendingOrders.map((p,pi)=>`
     <div class="sc" style="margin-bottom:8px">
-      <div class="sc-hd">📄 ${escHtml(p.name)} 的收據</div>
-      ${p.items.map(function(it){return '<div class="sc-row"><span>'+escHtml(it.name)+'×'+Number(it.qty||0)+'</span><span class="sc-p">NT$'+Number(it.sub||0)+'</span></div>';}).join('')}
-      ${p.note?`<div class="sc-row"><span>備註</span><span>${escHtml(p.note)}</span></div>`:''}
+      <div class="sc-hd">📄 ${p.name} 的收據</div>
+      ${p.items.map(function(it){return '<div class="sc-row"><span>'+it.name+'×'+it.qty+'</span><span class="sc-p">NT$'+it.sub+'</span></div>';}).join('')}
+      ${p.note?`<div class="sc-row"><span>備註</span><span>${p.note}</span></div>`:''}
       <div class="sc-tot"><span>小計</span><span class="sc-ta">NT$${p.total}</span></div>
     </div>`).join('');
 
@@ -4154,13 +4126,9 @@ function renderDoneAll(pendingOrders, myOrderIdxs, payMethod, synced){
     </div>
     ${receiptCards}
     <div class="paybox">
-      <div class="pb-t">💳 付款給團主 ${escHtml(grp.hostName)}</div>
+      <div class="pb-t">💳 付款給團主 ${grp.hostName}</div>
       <div class="pb-a">NT$${grandTotal}</div>
-      <div style="display:inline-flex;align-items:center;gap:10px;background:${pmBg};color:${pmFg};border-radius:10px;padding:14px 22px;font-size:1.05rem;font-weight:900;box-shadow:0 4px 14px rgba(0,0,0,.15);margin-top:6px">
-        <span style="font-size:1.5rem">${pmIco}</span>
-        <span>${synced===false?`付款方式：${pmLabel}`:`已記錄付款方式：${pmLabel}`}</span>
-      </div>
-      <div style="font-size:.72rem;color:var(--ink2);margin-top:8px">${synced===false?'⚠️ 訂單尚未送達，團主目前還看不到':'團主會在訂單清單看到此付款方式'}</div>
+      <div style="font-size:.72rem;color:var(--ink2);margin-top:8px">${synced===false?'⚠️ 訂單尚未送達，團主目前還看不到':'請將上述金額付款給團主'}</div>
     </div>
     <button class="btn btn-out btn-full" style="margin-bottom:8px" onclick="openGroupDetail('${S.type}')">
       📋 查看今日訂單清單
@@ -4178,10 +4146,11 @@ async function confirmAllPayments(idxs, method){
     }
   });
   saveG();
-  await Promise.all((idxs||[]).map(i =>
-    grp.orders[i]?._id ? updateOrderPaidV2(grp.orders[i]._id, true, method) : Promise.resolve(false)
-  ));
-  loadGroups(S.selDate).then(rerenderCurrentScreen);
+  if(GAS_URL){
+    await Promise.all((idxs||[]).map(i =>
+      sendGAS({action:'updateOrderPaid', dateKey:S.selDate, type:S.type, groupIdx:S.curGroupIdx, orderIdx:i, paid:true, paidMethod:method})
+    ));
+  }
   // 記錄 undo context
   window._lastCommitContext = { picker:'confirmAllPayments', idxs:[...(idxs||[])] };
   // 切換 UI 到 committed 狀態
@@ -4268,14 +4237,14 @@ function renderEditOrder(){
   const cart=S.persons[0]?.cart||{};
   document.getElementById('ord-wrap').innerHTML=`
     <div class="v2-info" style="border-left-color:var(--v2-accent)">
-      <div class="v2-info-title">修改 ${escHtml(order?.name)} 的訂單</div>
+      <div class="v2-info-title">修改 ${order?.name} 的訂單</div>
       <div class="v2-info-body">重新調整品項與數量後，按下方「確認更新訂單」即可覆蓋。</div>
     </div>
     <div class="sect">重新選擇品項</div>
     <div class="olist" id="olist"></div>
     <div class="sect">備註</div>
     <textarea class="v2-sel-input" style="min-height:60px;resize:vertical;font-family:var(--v2-sans);line-height:1.5" id="ord-note"
-      placeholder="特殊需求（選填）">${escHtml(order?.note||'')}</textarea>
+      placeholder="特殊需求（選填）">${order?.note||''}</textarea>
     <button class="btn btn-dk btn-full" style="margin-top:18px" onclick="saveEditOrder()">💾 確認更新訂單</button>
     <button class="btn btn-out btn-full" style="margin-top:8px" onclick="cancelEdit()">取消</button>
   `;
@@ -4301,40 +4270,65 @@ async function saveEditOrder(){
   const total=items.reduce((s,it)=>s+it.sub,0);
   const original = grp.orders[idx];
   if(!original){ toast('找不到原訂單'); return; }
-  // 本地更新（_pendingSync = true 確保未確認上雲時畫面先顯示新內容）
+  // 配 clientOrderId — ★ 每次儲存編輯都產新的，避免「edit A pending 時做 edit B」B 被當 idempotent 跳過
+  const cid = generateClientOrderId();
+  const editPayload = {
+    action:'editOrder',
+    dateKey:S.selDate, type:S.type, groupIdx:S.curGroupIdx,
+    name: original.name, items, total, note,
+    clientOrderId: cid
+  };
+  // 本地更新（_pendingSync = true 確保未確認上雲時不會被 polling 清掉）
   grp.orders[idx]={
     ...original, items, total, note,
     editedAt:new Date().toLocaleString('zh-TW'),
-    _pendingSync:true
+    _pendingSync:true,
+    _pendingPayload: editPayload,
+    _clientOrderId: cid
   };
   saveG();
-  S._lastWriteAt = Date.now();
-  // ★ Task 11：改呼叫 editOrderV2（Supabase RPC）
+  S._lastWriteAt = Date.now(); // 避免立刻被 syncGAS 覆蓋
+  // 同步到 GAS
   let editOk = false;
   let editErr = '';
-  if(original._id){
+  if(GAS_URL){
     toast('⏳ 更新雲端中…');
-    const r = await editOrderV2(original._id, items, note, !!original.paid, original.paidMethod || '');
-    if(!r){
-      editErr = '更新失敗';
+    const r = await sendGAS(editPayload);
+    if(!r?.success){
+      editErr = (r?.error||'未知錯誤');
     } else {
       editOk = true;
-      if(editOk && grp.orders[idx]){
-        delete grp.orders[idx]._pendingSync;
+      // 付款方式在 editOrder 後可能被清掉，補一刀
+      if(original.paidMethod){
+        const pr = await sendGAS({action:'updateOrderPaid',dateKey:S.selDate,type:S.type,groupIdx:S.curGroupIdx,orderIdx:idx,paid:original.paid,paidMethod:original.paidMethod});
+        if(!pr?.success){
+          // 付款狀態同步失敗 → 不能清 _pendingSync，下次自動重送會用 _pendingPayload 補
+          editOk = false;
+          editErr = pr?.error || '付款狀態同步失敗';
+        }
       }
-      saveG();
+      if(editOk){
+        if(grp.orders[idx]){
+          delete grp.orders[idx]._pendingSync;
+          delete grp.orders[idx]._pendingPayload;
+          delete grp.orders[idx]._clientOrderId;
+        }
+        saveG();
+        S._lastWriteAt = Date.now();
+      } else {
+        saveG();
+      }
     }
   } else {
-    editErr = '找不到原訂單的雲端 id';
+    editOk = true; // 沒設 GAS URL 視為本地模式
   }
   S.editingOrderIdx=-1; S.persons=[];
   if(editOk){
     toast('✅ 訂單已更新！');
   } else {
-    toast('⚠️ 雲端更新失敗：'+editErr);
+    toast('⚠️ 雲端更新失敗：'+editErr+' — 已存本地，系統會自動重送');
   }
   renderGroupDetail(); go('s-group');
-  loadGroups(S.selDate).then(rerenderCurrentScreen);
 }
 
 function cancelEdit(){
@@ -4368,9 +4362,9 @@ async function doSubmit(name,total,note,items){
     </div>
     <div class="sc">
       <div class="sc-hd">📄 訂單收據</div>
-      <div class="sc-row"><span>姓名</span><span style="font-weight:700">${escHtml(name)}</span></div>
-      ${items.map(function(it){return '<div class="sc-row"><span>'+escHtml(it.name)+'×'+Number(it.qty||0)+'</span><span class="sc-p">NT$'+Number(it.sub||0)+'</span></div>';}).join('')}
-      ${note?`<div class="sc-row"><span>備註</span><span>${escHtml(note)}</span></div>`:''}
+      <div class="sc-row"><span>姓名</span><span style="font-weight:700">${name}</span></div>
+      ${items.map(function(it){return '<div class="sc-row"><span>'+it.name+'×'+it.qty+'</span><span class="sc-p">NT$'+it.sub+'</span></div>';}).join('')}
+      ${note?`<div class="sc-row"><span>備註</span><span>${note}</span></div>`:''}
       <div class="sc-tot"><span>合計</span><span class="sc-ta">NT$${total}</span></div>
     </div>
 
@@ -4397,9 +4391,8 @@ async function confirmMyPayment(idx, method){
   grp.orders[idx].paid = true;
   grp.orders[idx].paidMethod = method;
   saveG();
-  if(grp.orders[idx]._id){
-    await updateOrderPaidV2(grp.orders[idx]._id, true, method);
-    loadGroups(S.selDate).then(rerenderCurrentScreen);
+  if(GAS_URL){
+    await sendGAS({action:'updateOrderPaid', dateKey:S.selDate, type:S.type, groupIdx:S.curGroupIdx, orderIdx:idx, paid:true, paidMethod:method});
   }
   window._lastCommitContext = { picker:'confirmMyPayment', idxs:[idx] };
   const area = document.getElementById('pay-choice-area');
@@ -4443,19 +4436,13 @@ async function sendGAS(p){
 }
 
 // ═══════════════════════════════════════════════
-// 自動重送未同步的團與訂單（跨裝置資料一致性的關鍵）
-// ★ Task 15 全面改寫：原本這支還是 Task 11 遷移前的 GAS 版本，只認
-//   _pendingPayload（GAS 專用欄位）、失敗時呼叫 sendGAS——Task 9-11 新增的
-//   _pendingSync 訂單從未設定過 _pendingPayload，所以對新版訂單永遠是 no-op。
-//   改成兩層掃描，全部走 Supabase RPC：
-//   (a) 先掃 grp._pendingCreate 的團 → 呼叫 createGroupV2 補建立，成功後補回 _id。
-//   (b) 再掃 order._pendingSync 的訂單（不再檢查 _pendingPayload）→ 若 grp._id
-//       已存在，呼叫 submitOrderV2/editOrderV2（比照 doSubmitAll 判斷邏輯，
-//       order._id 存在就是編輯、不存在就是新建）送出，成功後補付款狀態。
-//   sendGAS/GAS_URL/_pendingPayload 是 GAS 時代的機制，這支函式內部不再依賴，
-//   但不動 GAS_URL 這個全域變數本身（拍照辨識等其他呼叫點還在用）。
+// 自動重送未同步訂單（跨裝置資料一致性的關鍵）
+// 每次 polling + 頁面載入時掃描所有 _pendingSync 訂單，
+// 用儲存在本地的 _pendingPayload + _clientOrderId 重新呼叫 sendGAS。
+// 後端用 clientOrderId 去重，保證重送不會產生重複訂單。
 // ═══════════════════════════════════════════════
 async function retryPendingOrders(){
+  if(!GAS_URL) return {retried:0, succeeded:0, failed:0};
   if(S._retrying) return {retried:0, succeeded:0, failed:0, skipped:'in-progress'};
   S._retrying = true;
   let retried=0, succeeded=0, failed=0;
@@ -4467,59 +4454,39 @@ async function retryPendingOrders(){
         const grpArr = S.groups[dateKey][type] || [];
         for(let groupIdx=0; groupIdx<grpArr.length; groupIdx++){
           const grp = grpArr[groupIdx];
-          if(!grp) continue;
-
-          // (a) 補建立「開團失敗」的團
-          if(grp._pendingCreate){
-            const lastTry = grp._lastRetryAt || 0;
-            if(Date.now() - lastTry >= 10000){
-              grp._lastRetryAt = Date.now();
-              saveG();
-              retried++;
-              const shop = {id:grp.shopId||null, name:grp.shopName, addr:grp.shopAddr, icon:grp.shopIcon, tel:grp.shopTel};
-              grp.clientGroupId = grp.clientGroupId || newClientOrderId();
-              saveG();
-              const r = await createGroupV2(dateKey, type, shop, grp.payMethod, grp.payLink, grp.ipassLink, grp.announcement, grp.clientGroupId);
-              if(r && r.group_id){
-                grp._id = r.group_id;
-                if(typeof r.group_idx === 'number') grp.groupIdx = r.group_idx;
-                delete grp._pendingCreate;
-                delete grp._lastRetryAt;
-                succeeded++;
-                saveG();
-              } else {
-                failed++;
-              }
-            }
-          }
-
-          if(!Array.isArray(grp.orders)) continue;
-          // (b) 補送這個團底下「還沒同步」的訂單——必須等 grp._id 存在才有得送
+          if(!grp || !Array.isArray(grp.orders)) continue;
           for(let oi=0; oi<grp.orders.length; oi++){
             const order = grp.orders[oi];
-            if(!order || !order._pendingSync) continue;
-            if(!grp._id) continue; // 上一步的補建團還沒成功，等下一輪 retry
+            if(!order || !order._pendingSync || !order._pendingPayload) continue;
             // 節流：每筆訂單最快每 10 秒重送一次
             const lastTry = order._lastRetryAt || 0;
             if(Date.now() - lastTry < 10000) continue;
             order._lastRetryAt = Date.now();
-            order.clientOrderId = order.clientOrderId || newClientOrderId();
             saveG();
             retried++;
-            // 比照 doSubmitAll 既有判斷邏輯：order._id 已存在＝雲端已有這筆，改呼叫
-            // editOrderV2 整批取代；不存在＝雲端還沒有，呼叫 submitOrderV2 新建。
-            const call = order._id
-              ? editOrderV2(order._id, order.items, order.note || '', !!order.paid, order.paidMethod || '')
-              : submitOrderV2(grp._id, order.items, order.name, order.note || '', !!order.paid, order.paidMethod || '', order.clientOrderId);
-            const result = await call;
-            if(result){
-              const orderId = result.order_id || order._id;
-              // 主資料寫入成功才清 pending 旗標
-              if(orderId) order._id = orderId;
-              delete order._pendingSync;
-              delete order._lastRetryAt;
-              saveG();
-              succeeded++;
+            // 用儲存的 payload 重送（含 clientOrderId 做去重）
+            const r = await sendGAS(order._pendingPayload);
+            if(r && r.success){
+              // 補回付款狀態（若有）— 必須先成功才能清 pending
+              // ★ 用 name 不用 orderIdx：polling 期間陣列順序可能變動，name 是穩定 key
+              let paidOk = true;
+              if(order.paid && order.paidMethod && order.name){
+                const pr = await sendGAS({action:'updateOrderPaid', dateKey, type, groupIdx, name:order.name, paid:true, paidMethod:order.paidMethod});
+                if(!pr || pr.success === false) paidOk = false;
+              }
+              if(paidOk){
+                // 主資料 + 付款狀態都同步 OK → 清旗標
+                delete order._pendingSync;
+                delete order._pendingPayload;
+                delete order._clientOrderId;
+                delete order._lastRetryAt;
+                saveG();
+                succeeded++;
+              } else {
+                // 主資料寫入了但付款失敗 → 保留 pending，下次 retry 會用 clientOrderId 去重不重複寫資料，只補 paid
+                saveG();
+                failed++;
+              }
             } else {
               failed++;
             }
@@ -4581,9 +4548,7 @@ function updatePendingBanner(){
   };
 }
 
-// 點「立即重試」時把所有團／訂單的 _lastRetryAt 清掉，避免節流擋住
-// ★ Task 15：也要清 _pendingCreate 團的節流，不然「立即重試」對卡在開團失敗
-//   的團完全沒反應，得多等 10 秒節流視窗過了才會真的重打 RPC。
+// 點「立即重試」時把所有訂單的 _lastRetryAt 清掉，避免節流擋住
 function forceRetryAllPending(){
   const dates = Object.keys(S.groups||{});
   for(const d of dates){
@@ -4591,9 +4556,7 @@ function forceRetryAllPending(){
     for(const t of types){
       const arr = S.groups[d][t] || [];
       for(const g of arr){
-        if(!g) continue;
-        if(g._pendingCreate) g._lastRetryAt = 0;
-        if(!Array.isArray(g.orders)) continue;
+        if(!g || !Array.isArray(g.orders)) continue;
         for(const o of g.orders){
           if(o && o._pendingSync) o._lastRetryAt = 0;
         }
@@ -4615,213 +4578,6 @@ async function syncMenus(){
     }
   }catch(e){ console.warn('syncMenus failed:', e.message); }
 }
-
-// ★ Task 10：從 Supabase 讀取店家/菜單。沿用既有 S.remoteMenus 命名與 localStorage
-//   'remote_menus' 快取慣例（比照 syncMenus()），getShopList() 不需要改動就能吃到資料。
-// ★ Task 10 修正：Supabase/PostgREST 單次查詢預設上限 1000 筆，資料量可能超過的表
-//   (目前只有 menu_items，1987 筆)要用這個分頁迴圈抓完整份，否則後面的資料會靜默消失。
-async function fetchAllRows(tableName, selectCols) {
-  const pageSize = 1000;
-  let from = 0;
-  let all = [];
-  while (true) {
-    const { data, error } = await SB.from(tableName).select(selectCols).order('id').range(from, from + pageSize - 1);
-    if (error) throw error;
-    all = all.concat(data);
-    if (data.length < pageSize) break; // 這頁不滿代表已經是最後一頁
-    from += pageSize;
-  }
-  return all;
-}
-
-async function loadMenus(){
-  const { data: shops, error: shopErr } = await SB.from('shops').select('id, type, name, addr, tel, icon');
-  if (shopErr) { console.error('loadMenus shops failed', shopErr); return; }
-  let items;
-  try {
-    items = await fetchAllRows('menu_items', 'shop_id, name, price, cat');
-  } catch (itemErr) {
-    console.error('loadMenus items failed', itemErr);
-    return;
-  }
-
-  const byShop = {};
-  items.forEach(it => { (byShop[it.shop_id] = byShop[it.shop_id] || []).push({ name: it.name, price: it.price, cat: it.cat }); });
-
-  const drinks = [], foods = [], teas = [];
-  shops.forEach(s => {
-    const shop = { id: s.id, type: s.type, name: s.name, addr: s.addr, tel: s.tel, icon: s.icon, menu: byShop[s.id] || [] };
-    if (s.type === 'drink') drinks.push(shop);
-    else if (s.type === 'tea') teas.push(shop);
-    else foods.push(shop);
-  });
-  S.remoteMenus = { drinks, foods, teas };
-  localStorage.setItem('remote_menus', JSON.stringify(S.remoteMenus));
-}
-
-function mergePendingState(cloudRoot, localRoot){
-  Object.entries(localRoot || {}).forEach(([dateKey,types]) => {
-    Object.entries(types || {}).forEach(([type,localGroups]) => {
-      (localGroups || []).filter(Boolean).forEach(localGroup => {
-        cloudRoot[dateKey] = cloudRoot[dateKey] || {};
-        cloudRoot[dateKey][type] = cloudRoot[dateKey][type] || [];
-        const cloudGroups = cloudRoot[dateKey][type];
-        let cloudGroup = cloudGroups.find(g => g && (
-          (localGroup._id && g._id === localGroup._id) ||
-          (localGroup.clientGroupId && g.clientGroupId === localGroup.clientGroupId)
-        ));
-        if(localGroup._pendingCreate && !cloudGroup){ cloudGroups.push(localGroup); cloudGroup=localGroup; }
-        if(!cloudGroup) return;
-        (localGroup.orders || []).filter(o => o && o._pendingSync).forEach(localOrder => {
-          const idx = (cloudGroup.orders || []).findIndex(o =>
-            (localOrder._id && o._id === localOrder._id) ||
-            (localOrder.clientOrderId && o.clientOrderId === localOrder.clientOrderId)
-          );
-          if(idx >= 0) cloudGroup.orders[idx] = localOrder;
-          else (cloudGroup.orders = cloudGroup.orders || []).push(localOrder);
-        });
-      });
-    });
-  });
-  return cloudRoot;
-}
-
-// ★ Task 10：從 Supabase 讀取某天的團與訂單資料，寫入 S.groups[dateKey]
-async function loadGroups(dateKey){
-  const { data: groups, error: gErr } = await SB.from('groups').select('*').eq('date_key', dateKey).order('type').order('group_idx');
-  if (gErr) { console.error('loadGroups failed', gErr); return; }
-
-  const groupIds = groups.map(g => g.id);
-  const { data: orders, error: oErr } = groupIds.length
-    ? await SB.from('orders').select('*').in('group_id', groupIds)
-    : { data: [], error:null };
-  if (oErr) { console.error('loadGroups orders failed', oErr); return false; }
-
-  const byGroup = {};
-  (orders || []).forEach(o => { (byGroup[o.group_id] = byGroup[o.group_id] || []).push(o); });
-
-  const out = {};
-  groups.forEach(g => {
-    out[g.type] = out[g.type] || [];
-    out[g.type][g.group_idx] = {
-      groupIdx: g.group_idx, hostName: g.host_name,
-      shopName: g.shop_name, shopAddr: g.shop_addr, shopIcon: g.shop_icon, shopTel: g.shop_tel,
-      menu: Array.isArray(g.menu_snapshot) ? g.menu_snapshot : [],
-      payMethod: g.pay_method, payLink: g.pay_link, ipassLink: g.ipass_link, announcement: g.announcement,
-      _id: g.id, clientGroupId:g.client_group_id || '', // 真正的 group id 與重送去重鍵
-      orders: (byGroup[g.id] || []).map(o => ({
-        _id: o.id, clientOrderId:o.client_order_id || '', name: o.name, items: o.items, total: o.total, note: o.note || '', paid: o.paid, paidMethod: o.paid_method
-      }))
-    };
-  });
-  const merged = mergePendingState({[dateKey]:out}, {[dateKey]:(S.groups || {})[dateKey] || {}});
-  S.groups = S.groups || {};
-  S.groups[dateKey] = merged[dateKey] || {};
-  saveG();
-  return true;
-}
-
-// ★ Task 10：Realtime 訂閱取代輪詢
-let _realtimeChannel = null;
-
-function startRealtimeSync(dateKey){
-  if (_realtimeChannel) SB.removeChannel(_realtimeChannel);
-  _realtimeChannel = SB.channel('sync-' + dateKey)
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'groups', filter: `date_key=eq.${dateKey}` },
-      () => { loadGroups(dateKey).then(rerenderCurrentScreen); })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' },
-      () => { loadGroups(dateKey).then(rerenderCurrentScreen); })
-    .subscribe();
-}
-
-let _loadAllPromise = null;
-async function loadAllGroups(){
-  if(_loadAllPromise) return _loadAllPromise;
-  _loadAllPromise = loadAllGroupsOnce();
-  try { return await _loadAllPromise; }
-  finally { _loadAllPromise = null; }
-}
-
-async function loadAllGroupsOnce(){
-  const localBeforeRefresh = S.groups || {};
-  const groups = await fetchAllRows('groups', '*');
-  const orders = await fetchAllRows('orders', '*');
-  const byGroup = {};
-  orders.forEach(o => { (byGroup[o.group_id] = byGroup[o.group_id] || []).push(o); });
-  const out = {};
-  groups.forEach(g => {
-    const dateKey = g.date_key;
-    out[dateKey] = out[dateKey] || {};
-    out[dateKey][g.type] = out[dateKey][g.type] || [];
-    out[dateKey][g.type][g.group_idx] = {
-      groupIdx:g.group_idx, hostName:g.host_name,
-      shopName:g.shop_name, shopAddr:g.shop_addr, shopIcon:g.shop_icon, shopTel:g.shop_tel,
-      menu:Array.isArray(g.menu_snapshot) ? g.menu_snapshot : [],
-      payMethod:g.pay_method, payLink:g.pay_link, ipassLink:g.ipass_link, announcement:g.announcement,
-      _id:g.id, clientGroupId:g.client_group_id || '',
-      orders:(byGroup[g.id] || []).map(o => ({
-        _id:o.id, clientOrderId:o.client_order_id || '', name:o.name, items:o.items, total:o.total, note:o.note || '',
-        paid:o.paid, paidMethod:o.paid_method
-      }))
-    };
-  });
-  S.groups = mergePendingState(out, localBeforeRefresh);
-  saveG();
-  renderGrid();
-}
-
-let _realtimeReconnectTimer = null;
-function startRealtimeAll(){
-  if (_realtimeChannel) SB.removeChannel(_realtimeChannel);
-  let refreshTimer = null;
-  const refresh = payload => {
-    clearTimeout(refreshTimer);
-    refreshTimer = setTimeout(() => {
-      const groupId = payload?.new?.group_id || payload?.old?.group_id;
-      const changedGroup = payload?.table === 'groups' ? (payload.new || payload.old) : null;
-      const knownDate = changedGroup?.date_key || Object.entries(S.groups || {}).find(([,types]) =>
-        Object.values(types || {}).some(list => (list || []).some(g => g && g._id === groupId))
-      )?.[0];
-      const sync = knownDate ? loadGroups(knownDate) : loadAllGroups();
-      sync.then(rerenderCurrentScreen).catch(console.error);
-    }, 120);
-  };
-  _realtimeChannel = SB.channel('e118-live-orders')
-    .on('postgres_changes', {event:'*', schema:'public', table:'groups'}, refresh)
-    .on('postgres_changes', {event:'*', schema:'public', table:'orders'}, refresh)
-    .subscribe(status => {
-      if(status === 'SUBSCRIBED'){
-        clearTimeout(_realtimeReconnectTimer);
-        loadAllGroups().then(rerenderCurrentScreen).catch(console.error);
-      }else if(['CHANNEL_ERROR','TIMED_OUT','CLOSED'].includes(status)){
-        console.error('Realtime channel status', status);
-        clearTimeout(_realtimeReconnectTimer);
-        _realtimeReconnectTimer = setTimeout(startRealtimeAll, 2000);
-      }
-    });
-}
-
-async function startSupabaseData(){
-  startRealtimeAll();
-  await Promise.all([loadMenus(), loadAllGroups()]);
-  retryPendingOrders();
-  startSupabaseRetryLoop();
-}
-
-let _supabaseRetryTimer = null;
-function startSupabaseRetryLoop(){
-  if(_supabaseRetryTimer) return;
-  const tick = async () => {
-    if(document.visibilityState === 'visible') await retryPendingOrders();
-    _supabaseRetryTimer = setTimeout(tick, 5000);
-  };
-  _supabaseRetryTimer = setTimeout(tick, 5000);
-}
-
-window.addEventListener('online', () => loadAllGroups().then(rerenderCurrentScreen).catch(console.error));
-document.addEventListener('visibilitychange', () => {
-  if(document.visibilityState === 'visible') loadAllGroups().then(rerenderCurrentScreen).catch(console.error);
-});
 
 // 取得目前有效的店家列表（優先用 GAS，否則用內建）
 function getShopList(type){
@@ -5047,7 +4803,7 @@ function goPresets(){
 
   list.forEach(function(shop, idx){
     const mapUrl = 'https://maps.google.com/?q=' + encodeURIComponent((shop.addr||shop.name)+' 台南');
-    const telHref = safeTelHref(shop.tel||'');
+    const telHref = 'tel:' + (shop.tel||'').replace(/-/g,'');
 
     // Build menu rows
     let menuHtml = '';
@@ -5055,8 +4811,8 @@ function goPresets(){
       let rows = '';
       shop.menu.forEach(function(item){
         rows += '<div class="pshop-menu-item">'
-          + '<span>' + escHtml(item.name) + (item.cat ? ' <span class="pshop-menu-cat">'+escHtml(item.cat)+'</span>' : '') + '</span>'
-          + '<span class="pshop-menu-price">NT$' + Number(item.price||0) + '</span>'
+          + '<span>' + item.name + (item.cat ? ' <span class="pshop-menu-cat">'+item.cat+'</span>' : '') + '</span>'
+          + '<span class="pshop-menu-price">NT$' + item.price + '</span>'
           + '</div>';
       });
       menuHtml = '<div style="font-size:.72rem;font-weight:700;color:var(--ink2);padding:6px 0;cursor:pointer;display:flex;align-items:center;justify-content:space-between" onclick="var n=this.nextElementSibling;n.style.display=n.style.display===\'block\'?\'none\':\'block\';this.querySelector(\'span:last-child\').textContent=n.style.display===\'block\'?\'收合 ‹\':\'展開 ›\'">'
@@ -5070,15 +4826,16 @@ function goPresets(){
 
     html += '<div class="pshop-card" id="psc-' + idx + '">'
       + '<div class="pshop-hd" onclick="togglePresetCard(' + idx + ')">'
-      +   '<span class="pshop-ico">' + escHtml(shop.icon||'🏪') + '</span>'
+      +   '<span class="pshop-ico">' + (shop.icon||'🏪') + '</span>'
       +   '<div class="pshop-info">'
-      +     '<div class="pshop-nm">' + escHtml(shop.name) + '</div>'
-      +     '<a class="pshop-addr" href="' + escHtml(mapUrl) + '" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="text-decoration:none;color:inherit;display:block">📍 ' + escHtml(shop.addr||'') + '</a>'
-      +     '<a class="pshop-tel" href="' + escHtml(telHref) + '" onclick="event.stopPropagation()" style="text-decoration:none;display:block">📞 ' + escHtml(shop.tel||'—') + '</a>'
+      +     '<div class="pshop-nm">' + shop.name + '</div>'
+      +     '<a class="pshop-addr" href="' + mapUrl + '" target="_blank" onclick="event.stopPropagation()" style="text-decoration:none;color:inherit;display:block">📍 ' + (shop.addr||'') + '</a>'
+      +     '<a class="pshop-tel" href="' + telHref + '" onclick="event.stopPropagation()" style="text-decoration:none;display:block">📞 ' + (shop.tel||'—') + '</a>'
       +   '</div>'
       +   '<span class="pshop-arrow">›</span>'
       + '</div>'
       + '<div class="pshop-body">'
+      + '<button onclick="openItemImageEditor(' + idx + ')" style="width:100%;padding:11px;border-radius:9px;border:2px solid #7c3aed;background:#f5f3ff;color:#6d28d9;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px">🖼️ 編輯圖片</button>'
       +   (mgr
           ? '<div style="display:flex;gap:8px;margin-bottom:8px">'
             + '<button onclick="renamePresetShop(' + idx + ')" style="flex:1;padding:11px;border-radius:9px;border:2px solid var(--v2-accent);background:var(--v2-cream-lt);color:var(--v2-caramel);font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit">✏️ 重新命名</button>'
@@ -5095,6 +4852,60 @@ function goPresets(){
   go('s-presets');
 }
 
+function openItemImageEditor(idx){
+  const shop = getShopList(S.type)[idx];
+  if(!shop) return;
+  S._imageShop = shop;
+  const cfg = tcfg(S.type);
+  document.getElementById('img-title').textContent = '編輯菜單圖片';
+  document.getElementById('img-sub').textContent = shop.name + '｜點選品項右側 📷 上傳';
+  renderItemImageEditor();
+  go('s-item-images');
+}
+
+function renderItemImageEditor(){
+  const shop = S._imageShop;
+  const wrap = document.getElementById('img-wrap');
+  if(!shop || !wrap) return;
+  const icon = shop.icon || tcfg(S.type).icon || '🍽️';
+  wrap.innerHTML = '<div class="sect">' + shop.name + '（' + (shop.menu||[]).length + ' 項）</div>' +
+    ((shop.menu||[]).map(function(item,i){
+      const thumb = item.imgUrl
+        ? '<img src="' + item.imgUrl + '" alt="" style="width:100%;height:100%;object-fit:cover">'
+        : icon;
+      return '<div class="mi" style="margin-bottom:8px">'
+        + '<div style="width:52px;height:52px;border-radius:9px;background:var(--bg);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;font-size:1.5rem">' + thumb + '</div>'
+        + '<div class="mi-info"><div class="mi-nm">' + item.name + '</div><div class="mi-cat">' + (item.cat||'') + '｜NT$' + item.price + '</div></div>'
+        + '<input type="file" id="item-img-input-' + i + '" accept="image/*" style="display:none" onchange="uploadItemImage(' + i + ',event)">'
+        + '<button class="btn btn-out btn-sm" onclick="document.getElementById(\'item-img-input-' + i + '\').click()">📷</button>'
+        + '</div>';
+    }).join('') || '<div style="color:var(--ink3);font-size:.8rem;padding:6px 0">尚無品項</div>');
+}
+
+async function uploadItemImage(itemIdx, e){
+  const file = e?.target?.files?.[0];
+  if(e?.target) e.target.value = '';
+  const shop = S._imageShop;
+  const item = shop?.menu?.[itemIdx];
+  if(!file || !shop || !item) return;
+  if(!GAS_URL){ toast('⚠️ 尚未設定 GAS_URL'); return; }
+  try{
+    toast('⏳ 圖片處理中…');
+    const img = await compressMenuImg(file);
+    const uploaded = await sendGAS({action:'uploadItemImage', type:shop.type||S.type, name:shop.name, itemName:item.name, mimeType:img.mimeType, imageBase64:img.base64});
+    if(!uploaded.success) throw new Error(uploaded.error||'圖片上傳失敗');
+    const updated = await sendGAS({action:'updateMenuItem', type:shop.type||S.type, name:shop.name, itemName:item.name, imgUrl:uploaded.url});
+    if(!updated.success) throw new Error(updated.error||'圖片儲存失敗');
+    item.imgUrl = uploaded.url;
+    toast('✅ 已更新「' + item.name + '」圖片');
+    renderItemImageEditor();
+    renderMItems();
+    await syncMenus();
+  }catch(err){
+    toast('⚠️ 圖片更新失敗：' + err.message);
+  }
+}
+
 
 function togglePresetCard(idx){
   const card = document.getElementById('psc-'+idx);
@@ -5105,7 +4916,7 @@ function pickPresetShop(idx){
   const list = getShopList(S.type);
   const shop = list[idx];
   S.shopSel = shop;
-  S.aiMenu = (shop.menu||[]).map(m=>({name:m.name,price:m.price,cat:m.cat||''}));
+  S.aiMenu = (shop.menu||[]).map(m=>({name:m.name,price:m.price,cat:m.cat||'',imgUrl:m.imgUrl||'',icon:m.icon||shop.icon||''}));
   S.hostName=''; S.payMethod=null; S.payLink=''; S.ipassLink=''; S.payQr=null; S.announcement='';
   S.setupStep=1;
   renderSetup();
@@ -5181,12 +4992,12 @@ function exportPDF(){
     const oTotal = calcOrderTotal(o);
     const itemsHtml = (o.items||[]).map(it=>{
       const sub = calcItemSub(it);
-      return '<div style="display:flex;justify-content:space-between;gap:8px;padding:2px 0;font-size:.82rem"><span>'+escHtml(it.name)+' ×'+Number(it.qty||0)+'</span><span style="color:#666;font-family:\'DM Mono\',monospace">NT$'+sub+'</span></div>';
+      return '<div style="display:flex;justify-content:space-between;gap:8px;padding:2px 0;font-size:.82rem"><span>'+it.name+' ×'+it.qty+'</span><span style="color:#666;font-family:\'DM Mono\',monospace">NT$'+sub+'</span></div>';
     }).join('');
-    const noteHtml = o.note?'<div style="font-size:.74rem;color:#666;margin-top:4px;padding-top:4px;border-top:1px dashed #ddd">📝 '+escHtml(o.note)+'</div>':'';
+    const noteHtml = o.note?'<div style="font-size:.74rem;color:#666;margin-top:4px;padding-top:4px;border-top:1px dashed #ddd">📝 '+o.note+'</div>':'';
     return `
     <tr>
-      <td style="padding:9px 12px;border:1px solid #ddd;font-weight:700;vertical-align:top;white-space:nowrap">${escHtml(o.name)}</td>
+      <td style="padding:9px 12px;border:1px solid #ddd;font-weight:700;vertical-align:top;white-space:nowrap">${o.name}</td>
       <td style="padding:9px 12px;border:1px solid #ddd">${itemsHtml}${noteHtml}</td>
       <td style="padding:9px 12px;border:1px solid #ddd;text-align:center;vertical-align:top;white-space:nowrap">${pmIco}</td>
       <td style="padding:9px 12px;border:1px solid #ddd;text-align:right;font-weight:700;color:var(--v2-caramel);vertical-align:top;white-space:nowrap">NT$${oTotal}</td>
@@ -5201,7 +5012,7 @@ function exportPDF(){
     itemAgg[k].sub += calcItemSub(it);
   }));
   const aggRows = Object.entries(itemAgg).map(([name,v])=>
-    '<tr><td style="padding:7px 10px;border:1px solid #ddd">'+escHtml(name)+'</td><td style="padding:7px 10px;border:1px solid #ddd;text-align:center;font-weight:700">×'+v.qty+'</td><td style="padding:7px 10px;border:1px solid #ddd;text-align:right;color:var(--v2-caramel);font-weight:700">NT$'+v.sub+'</td></tr>'
+    '<tr><td style="padding:7px 10px;border:1px solid #ddd">'+name+'</td><td style="padding:7px 10px;border:1px solid #ddd;text-align:center;font-weight:700">×'+v.qty+'</td><td style="padding:7px 10px;border:1px solid #ddd;text-align:right;color:var(--v2-caramel);font-weight:700">NT$'+v.sub+'</td></tr>'
   ).join('');
   const totalQty = Object.values(itemAgg).reduce((s,v)=>s+v.qty,0);
 
@@ -5233,13 +5044,13 @@ function exportPDF(){
 
   // Shop info table (店家資訊 + 地址/電話可點)
   html += '<table style="width:100%;border-collapse:collapse;margin-bottom:18px;font-size:.84rem">';
-  html += '<tr style="background:#f5f5f5"><td style="padding:7px 10px;border:1px solid #ddd;font-weight:700;width:70px">店家</td><td style="padding:7px 10px;border:1px solid #ddd">' + escHtml(grp.shopIcon||'') + ' ' + escHtml(grp.shopName) + '</td>';
-  html += '<td style="padding:7px 10px;border:1px solid #ddd;font-weight:700;width:55px">團主</td><td style="padding:7px 10px;border:1px solid #ddd">' + escHtml(grp.hostName) + '</td></tr>';
-  html += '<tr><td style="padding:7px 10px;border:1px solid #ddd;font-weight:700">地址</td><td style="padding:7px 10px;border:1px solid #ddd"><a href="' + escHtml(mapUrl) + '" style="color:#1d4ed8;text-decoration:none">📍 ' + escHtml(addr||'—') + '</a></td>';
+  html += '<tr style="background:#f5f5f5"><td style="padding:7px 10px;border:1px solid #ddd;font-weight:700;width:70px">店家</td><td style="padding:7px 10px;border:1px solid #ddd">' + (grp.shopIcon||'') + ' ' + grp.shopName + '</td>';
+  html += '<td style="padding:7px 10px;border:1px solid #ddd;font-weight:700;width:55px">團主</td><td style="padding:7px 10px;border:1px solid #ddd">' + grp.hostName + '</td></tr>';
+  html += '<tr><td style="padding:7px 10px;border:1px solid #ddd;font-weight:700">地址</td><td style="padding:7px 10px;border:1px solid #ddd"><a href="' + mapUrl + '" style="color:#1d4ed8;text-decoration:none">📍 ' + (addr||'—') + '</a></td>';
   const telStr = fmtTel(tel);
-  html += '<td style="padding:7px 10px;border:1px solid #ddd;font-weight:700">電話</td><td style="padding:7px 10px;border:1px solid #ddd">' + (telStr ? '<a href="' + escHtml(safeTelHref(telStr)) + '" style="color:#15803d;text-decoration:none;font-weight:700">📞 ' + escHtml(telStr) + '</a>' : '—') + '</td></tr>';
+  html += '<td style="padding:7px 10px;border:1px solid #ddd;font-weight:700">電話</td><td style="padding:7px 10px;border:1px solid #ddd">' + (telStr ? '<a href="tel:' + telStr.replace(/-/g,'') + '" style="color:#15803d;text-decoration:none;font-weight:700">📞 ' + telStr + '</a>' : '—') + '</td></tr>';
   html += '<tr style="background:#f5f5f5"><td style="padding:7px 10px;border:1px solid #ddd;font-weight:700">日期</td><td colspan="3" style="padding:7px 10px;border:1px solid #ddd">' + S.selDate + '</td></tr>';
-  if(grp.announcement) html += '<tr><td colspan="4" style="padding:7px 10px;border:1px solid #ddd"><b>📢</b> ' + escHtml(grp.announcement) + '</td></tr>';
+  if(grp.announcement) html += '<tr><td colspan="4" style="padding:7px 10px;border:1px solid #ddd"><b>📢</b> ' + grp.announcement + '</td></tr>';
   html += '</table>';
 
   // 品項合併統計表（給團主一次跟店家點）
@@ -5332,7 +5143,7 @@ function doDownloadPDF(){
 // NAV
 // ═══════════════════════════════════════════════
 function go(name){
-  const ids={'land':'s-land','day':'s-day','shop':'s-shop','presets':'s-presets','s-presets':'s-presets','setup':'s-setup','order':'s-order','confirm':'s-confirm','done':'s-done','group':'s-group','s-group':'s-group','help':'s-help'};
+  const ids={'land':'s-land','day':'s-day','shop':'s-shop','presets':'s-presets','s-presets':'s-presets','item-images':'s-item-images','s-item-images':'s-item-images','setup':'s-setup','order':'s-order','confirm':'s-confirm','done':'s-done','group':'s-group','s-group':'s-group','help':'s-help'};
   const target=ids[name]||name;
   document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
   document.getElementById(target)?.classList.add('on');
@@ -5357,6 +5168,7 @@ const NAV_BACK = {
   's-day'    : ()=>go('land'),
   's-shop'   : ()=>go('day'),
   's-presets': ()=>go('s-shop'),
+  's-item-images': ()=>go('s-presets'),
   's-setup'  : ()=>setupBack(),
   's-order'  : ()=>leaveOrderScreen(),   // 內含「品項還沒送出」confirm
   's-confirm': ()=>go('order'),
@@ -5391,257 +5203,7 @@ function toast(m){
   _tt=setTimeout(()=>el.classList.remove('on'),2600);
 }
 
-// ═══════════════════════════════════════════════
-// WHOAMI（Supabase 身分綁定，Task 9）
-// ═══════════════════════════════════════════════
-let ME = null;
-let _supabaseDataStarted = false;
-
-function getOrCreateDeviceId() {
-  let id = localStorage.getItem('e118_device_id');
-  if (!id) {
-    id = 'dev-' + crypto.randomUUID();
-    localStorage.setItem('e118_device_id', id);
-  }
-  return id;
-}
-
-// ── 身分驗證輔助（Task 17 修正）：cached member_id 若已經不存在於雲端 members 表
-//    （成員被刪除、換屆、或未來的資料重置），舊版直接信任 localStorage，導致
-//    所有寫入 RPC（開團/點餐）永遠因外鍵約束（groups_host_member_id_fkey /
-//    orders_member_id_fkey）失敗，卻只顯示誤導性的「雲端同步失敗」，裝置被永久鎖死。
-//    這裡統一判斷「是不是身分失效」、統一善後（清快取＋帶回選名字畫面）。
-function isMemberIdentityFkError(error) {
-  // Postgres 外鍵違反固定是代碼 23503；再檢查訊息含 member_id，避免誤判成其他表
-  // （例如 shop_id）的外鍵錯誤，那種不該把使用者身分洗掉。
-  return !!error && error.code === '23503' && /member_id/i.test(error.message || '');
-}
-
-function handleIdentityInvalidated(actionLabel) {
-  if (!ME) return; // 已經處理過一次了（例如背景重試連續打到同一個失效身分），不要重複跳轉/重複 toast
-  localStorage.removeItem('e118_member_id');
-  localStorage.removeItem('e118_display_name');
-  ME = null;
-  toast('身分資料已失效，請重新選擇你的名字' + (actionLabel ? '（' + actionLabel + '未成功）' : ''));
-  initWhoAmI();
-}
-
-async function initWhoAmI() {
-  const deviceId = getOrCreateDeviceId();
-  const { data: meResult } = await SB.rpc('whoami');
-  if (meResult?.member_id) {
-    finishWhoAmI(meResult.member_id, meResult.display_name);
-    return;
-  }
-  // 遷移前已綁過的裝置先嘗試認領；新裝置會得到 device not found，屬正常流程。
-  const adopted = await SB.rpc('adopt_existing_device', { p_device_id: deviceId });
-  if (!adopted.error && adopted.data?.member_id) {
-    finishWhoAmI(adopted.data.member_id, adopted.data.display_name);
-    return;
-  }
-  localStorage.removeItem('e118_member_id');
-  localStorage.removeItem('e118_display_name');
-  // 登入前不開放查詢資料庫名單；畫面使用隨版本發布的班級顯示名，真正綁定仍由後端驗證。
-  renderWhoAmIList(MEMBERS.map(display_name => ({display_name})));
-  go('s-whoami');
-}
-
-// Task 16：沿用 openMemberPicker() 既有的 .mp-list/.mp-row/.mp-check/.mp-other 視覺語言，
-// 取代原本 <select>+<input> 並排的矛盾介面。用 textContent 而非插字串進 innerHTML，
-// 避免名字含特殊字元造成 XSS / parse error（比照 openMemberPicker 的做法）。
-function renderWhoAmIList(members) {
-  const list = document.getElementById('whoami-list');
-  list.innerHTML = '';
-  members.forEach(m => {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'mp-row';
-    const check = document.createElement('span');
-    check.className = 'mp-check';
-    const label = document.createElement('span');
-    label.textContent = m.display_name;
-    btn.appendChild(check);
-    btn.appendChild(label);
-    btn.addEventListener('click', () => openWhoAmIPasswordConfirm(m.display_name));
-    list.appendChild(btn);
-  });
-}
-
-function finishWhoAmI(memberId, displayName) {
-  const deviceId = getOrCreateDeviceId();
-  ME = { member_id: memberId, display_name: displayName, device_id: deviceId };
-  localStorage.setItem('e118_member_id', ME.member_id);
-  localStorage.setItem('e118_display_name', ME.display_name);
-  go('land');
-  if (!_supabaseDataStarted) {
-    _supabaseDataStarted = true;
-    startSupabaseData().catch(err => {
-      _supabaseDataStarted = false;
-      console.error(err);
-      toast('資料同步失敗：' + err.message);
-    });
-  }
-}
-
-// ── 選到既有名字：換手機需要班級密碼確認身分（Task 3 資安修正，密碼機制本身不可拿掉）。
-//    取代原生 confirm()+prompt() 兩個醜對話框，改用同一套 .cf-modal/.cf-sheet 樣式一步完成。
-let _whoamiPendingDisplayName = null;
-
-function openWhoAmIPasswordConfirm(displayName) {
-  _whoamiPendingDisplayName = displayName;
-  document.getElementById('whoami-pw-modal')?.remove();
-  const m = document.createElement('div');
-  m.id = 'whoami-pw-modal';
-  m.className = 'cf-modal';
-  m.innerHTML = `
-    <div class="cf-sheet">
-      <div class="cf-title">你選的是：<span id="whoami-pw-name"></span></div>
-      <div class="cf-msg">換手機需要輸入班級密碼確認身分：</div>
-      <input class="cf-pw" id="whoami-pw-input" type="password" placeholder="輸入班級密碼" maxlength="64">
-      <div class="cf-btns">
-        <button class="btn btn-out" id="whoami-pw-cancel" style="flex:1">取消</button>
-        <button class="btn" id="whoami-pw-ok" style="flex:1;background:var(--v2-caramel);color:#fff">確定</button>
-      </div>
-    </div>`;
-  m.querySelector('#whoami-pw-name').textContent = displayName;
-  document.body.appendChild(m);
-  const input = m.querySelector('#whoami-pw-input');
-  m.querySelector('#whoami-pw-cancel').addEventListener('click', closeWhoAmIPasswordConfirm);
-  m.querySelector('#whoami-pw-ok').addEventListener('click', confirmWhoAmIPassword);
-  input.addEventListener('keydown', e => { if (e.key === 'Enter') confirmWhoAmIPassword(); });
-  m.addEventListener('click', e => { if (e.target === m) closeWhoAmIPasswordConfirm(); });
-  setTimeout(() => input.focus(), 100);
-}
-
-function closeWhoAmIPasswordConfirm() {
-  document.getElementById('whoami-pw-modal')?.remove();
-  _whoamiPendingDisplayName = null;
-}
-
-async function confirmWhoAmIPassword() {
-  const displayName = _whoamiPendingDisplayName;
-  if (!displayName) return;
-  const input = document.getElementById('whoami-pw-input');
-  const pw = input?.value || '';
-  const deviceId = getOrCreateDeviceId();
-  const result = await SB.rpc('claim_member', { p_device_id: deviceId, p_display_name: displayName, p_class_code: pw });
-  if (result.error) {
-    // 密碼錯誤要有清楚提示，不可靜默失敗——照 confirmDelete() 既有的錯誤呈現方式
-    if (input) {
-      input.classList.add('err'); input.value = ''; input.placeholder = '密碼錯誤，請重試';
-      setTimeout(() => input.classList.remove('err'), 400);
-      input.focus();
-    }
-    return;
-  }
-  closeWhoAmIPasswordConfirm();
-  finishWhoAmI(result.data.member_id, result.data.display_name);
-}
-
-// ═══════════════════════════════════════════════
-// WRITE 操作改呼叫 Supabase RPC（Task 11）
-// ═══════════════════════════════════════════════
-// 現行購物車 cart[menuIdx] = [{sugar,ice}, ...]（每杯一筆，見 personCart()/getCartTotal()）
-// 送單前會先被攤平成 items = [{name, qty, price, sub, spec}, ...]（見 doSubmitAll/saveEditOrder 裡的
-// allPersonSummary / items 建構區塊）。submit_order / edit_order RPC 只讀 item.price 與 item.qty
-// （後端用 (item->>'price')::integer * (item->>'qty')::integer 重算金額，見
-// supabase/migrations/0005_submit_order_rpc.sql、0006_order_edit_delete_rpc.sql），
-// 不需要 sub/spec，這裡把多餘欄位濾掉，只留 RPC 契約要的 {name, price, qty}。
-function toRpcItems(items){
-  return (items||[]).map(it => ({
-    name: it.name,
-    price: Number(it.price) || 0,
-    qty: Number(it.qty) || 0
-  }));
-}
-
-function newClientOrderId(){
-  return 'c-' + crypto.randomUUID();
-}
-
-async function submitOrderV2(groupId, items, name, note, paid, paidMethod, existingClientOrderId) {
-  const clientOrderId = existingClientOrderId || newClientOrderId();
-  const { data, error } = await SB.rpc('submit_order', {
-    p_group_id: groupId, p_name: name || ME.display_name,
-    p_items: toRpcItems(items), p_note: note || '', p_paid:!!paid,
-    p_paid_method:paidMethod || '', p_client_order_id: clientOrderId
-  });
-  if (error) {
-    // Task 17 修正：跟 createGroupV2 同一套判斷——member_id 外鍵違反代表這支裝置
-    // 的身分快取已經失效，不是單純的網路問題，要清快取＋帶回選名字畫面，不是丟一句
-    // 讓人誤會是網路壞掉的「送單失敗」。
-    if (isMemberIdentityFkError(error)) { handleIdentityInvalidated('送出訂單'); return null; }
-    toast('送單失敗：' + error.message);
-    return null;
-  }
-  return data;
-}
-
-async function deleteOrderV2(orderId) {
-  const { data, error } = await SB.rpc('delete_order', { p_order_id: orderId });
-  if (error) { toast('刪除失敗：' + error.message); return false; }
-  return data.success;
-}
-
-async function editOrderV2(orderId, items, note, paid, paidMethod) {
-  const { data, error } = await SB.rpc('edit_order', {
-    p_order_id: orderId, p_items: toRpcItems(items), p_note: note || '',
-    p_paid:!!paid, p_paid_method:paidMethod || ''
-  });
-  if (error) { toast('更新失敗：' + error.message); return null; }
-  return data;
-}
-
-async function updateOrderPaidV2(orderId, paid, paidMethod) {
-  const { data, error } = await SB.rpc('update_order_paid', {
-    p_order_id: orderId, p_paid: paid, p_paid_method: paidMethod || ''
-  });
-  if (error) { toast('付款狀態更新失敗：' + error.message); return false; }
-  return data.success;
-}
-
-async function createGroupV2(dateKey, type, shop, payMethod, payLink, ipassLink, announcement, clientGroupId) {
-  const { data, error } = await SB.rpc('create_group', {
-    p_date_key: dateKey, p_type: type, p_client_group_id: clientGroupId || newClientOrderId(),
-    p_shop_id: shop.id || null, p_shop_name: shop.name, p_shop_addr: shop.addr || '',
-    p_shop_icon: shop.icon || '', p_shop_tel: shop.tel || '',
-    p_menu_snapshot: Array.isArray(S.aiMenu) ? S.aiMenu : [],
-    p_pay_method: payMethod, p_pay_link: payLink || '', p_ipass_link: ipassLink || '',
-    p_announcement: announcement || ''
-  });
-  if (error) {
-    // Task 17 修正：host_member_id 外鍵違反代表這支裝置的身分快取已經失效
-    // （member 已經不存在於雲端 members 表），這不是網路問題，繼續重試也永遠失敗，
-    // 要清快取＋帶使用者回去重新選名字，並用真正原因取代誤導性的「雲端同步失敗」。
-    if (isMemberIdentityFkError(error)) { handleIdentityInvalidated('開團'); return null; }
-    toast('開團失敗：' + error.message);
-    return null;
-  }
-  return data;
-}
-
-async function deleteGroupV2(groupId, password) {
-  const { data, error } = await SB.rpc('delete_group', { p_group_id: groupId, p_class_code: password });
-  if (error) { toast('刪除失敗：' + error.message); return false; }
-  return data.success;
-}
-
-async function bootstrapApp(){
-  init();
-  const { data: sessionData, error: sessionErr } = await SB.auth.getSession();
-  if (sessionErr) throw sessionErr;
-  if (!sessionData.session) {
-    const { error: signInErr } = await SB.auth.signInAnonymously();
-    if (signInErr) throw signInErr;
-  }
-  await initWhoAmI();
-}
-
-bootstrapApp().catch(err => {
-  console.error('bootstrap failed', err);
-  toast('系統登入失敗：' + err.message);
-  go('s-whoami');
-});
+init();
 </script>
 </body>
 </html>
