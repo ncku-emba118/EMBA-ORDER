@@ -5580,30 +5580,18 @@ function finishWhoAmI(memberId, displayName) {
 //    取代原生 confirm()+prompt() 兩個醜對話框，改用同一套 .cf-modal/.cf-sheet 樣式一步完成。
 let _whoamiPendingDisplayName = null;
 
-function openWhoAmIPasswordConfirm(displayName) {
+async function openWhoAmIPasswordConfirm(displayName) {
+  // 2026-10-05 使用者決定改信任制：換手機不再要班級密碼，直接綁定（後端 claim_member 已同步拿掉密碼檢查）。
   _whoamiPendingDisplayName = displayName;
-  document.getElementById('whoami-pw-modal')?.remove();
-  const m = document.createElement('div');
-  m.id = 'whoami-pw-modal';
-  m.className = 'cf-modal';
-  m.innerHTML = `
-    <div class="cf-sheet">
-      <div class="cf-title">你選的是：<span id="whoami-pw-name"></span></div>
-      <div class="cf-msg">換手機需要輸入班級密碼確認身分：</div>
-      <input class="cf-pw" id="whoami-pw-input" type="password" placeholder="輸入班級密碼" maxlength="64">
-      <div class="cf-btns">
-        <button class="btn btn-out" id="whoami-pw-cancel" style="flex:1">取消</button>
-        <button class="btn" id="whoami-pw-ok" style="flex:1;background:var(--v2-caramel);color:#fff">確定</button>
-      </div>
-    </div>`;
-  m.querySelector('#whoami-pw-name').textContent = displayName;
-  document.body.appendChild(m);
-  const input = m.querySelector('#whoami-pw-input');
-  m.querySelector('#whoami-pw-cancel').addEventListener('click', closeWhoAmIPasswordConfirm);
-  m.querySelector('#whoami-pw-ok').addEventListener('click', confirmWhoAmIPassword);
-  input.addEventListener('keydown', e => { if (e.key === 'Enter') confirmWhoAmIPassword(); });
-  m.addEventListener('click', e => { if (e.target === m) closeWhoAmIPasswordConfirm(); });
-  setTimeout(() => input.focus(), 100);
+  const deviceId = getOrCreateDeviceId();
+  const result = await SB.rpc('claim_member', { p_device_id: deviceId, p_display_name: displayName, p_class_code: '' });
+  if (result.error) {
+    toast('⚠️ 無法綁定這個名字，請重新整理再試，或聯絡管理員');
+    _whoamiPendingDisplayName = null;
+    return;
+  }
+  _whoamiPendingDisplayName = null;
+  finishWhoAmI(result.data.member_id, result.data.display_name);
 }
 
 function closeWhoAmIPasswordConfirm() {
