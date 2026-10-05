@@ -2336,6 +2336,9 @@ async function deleteOrder(orderIdx){
   if(!grp||!grp.orders||!grp.orders[orderIdx]) return;
   const o = grp.orders[orderIdx];
   if(!confirm('確定要刪除「'+o.name+'」的訂單嗎？\n（NT$'+calcOrderTotal(o)+'，此動作無法復原）')) return;
+  // 2026-10-06 使用者決定：刪單一律需要班級密碼（不分誰的單）
+  const delPw = prompt('刪除訂單需要班級密碼：');
+  if(delPw===null) return;
   // 先存原資料以便失敗回滾
   const backup = grp.orders.slice();
   grp.orders.splice(orderIdx,1);
@@ -2344,7 +2347,7 @@ async function deleteOrder(orderIdx){
   toast('⏳ 刪除中…');
   if(!o._id){ toast('🗑 已刪除「'+o.name+'」的訂單'); return; }
   try{
-    const ok = await deleteOrderV2(o._id);
+    const ok = await deleteOrderV2(o._id, delPw);
     if(!ok){
       // 失敗回滾
       grp.orders = backup;
@@ -5753,9 +5756,9 @@ async function submitOrderV2(groupId, items, name, note, paid, paidMethod, exist
   return data;
 }
 
-async function deleteOrderV2(orderId) {
-  const { data, error } = await SB.rpc('delete_order', { p_order_id: orderId });
-  if (error) { toast('刪除失敗：' + error.message); return false; }
+async function deleteOrderV2(orderId, classCode) {
+  const { data, error } = await SB.rpc('delete_order', { p_order_id: orderId, p_class_code: classCode || '' });
+  if (error) { toast(/class code/i.test(error.message) ? '❌ 密碼錯誤，訂單沒有刪除' : '刪除失敗：' + error.message); return false; }
   return data.success;
 }
 
