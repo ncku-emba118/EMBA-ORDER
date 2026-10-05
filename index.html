@@ -200,6 +200,16 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--ink)
 .oi-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}
 .oi-p{font-size:.9rem;font-weight:700;color:var(--v2-caramel);font-family:'DM Mono',monospace}
 .qrow{display:flex;align-items:center;gap:5px}
+.oi-cam{display:inline-flex;align-items:center;gap:3px;margin-top:4px;padding:2px 8px;border-radius:999px;border:1px solid var(--bdr2);background:var(--bg);color:var(--ink2);font-size:.62rem;font-family:inherit;cursor:pointer;line-height:1.6}
+.oi-cam:active{background:var(--bdr)}
+.oi-cam[disabled]{opacity:.5;cursor:default}
+.thumb-zoom{cursor:zoom-in}
+body.lb-open{overflow:hidden}
+#img-lb{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.82);display:none;flex-direction:column;align-items:center;justify-content:center;padding:56px 12px 24px;overscroll-behavior:contain}
+#img-lb.on{display:flex}
+#img-lb img{max-width:100%;max-height:calc(100vh - 130px);max-height:calc(100dvh - 130px);object-fit:contain;border-radius:10px;background:#fff;box-shadow:0 8px 40px rgba(0,0,0,.5)}
+#img-lb .lb-cap{margin-top:12px;color:#fff;font-size:.95rem;font-weight:700;text-align:center;max-width:92%;word-break:break-word}
+#img-lb .lb-x{position:absolute;top:max(10px,env(safe-area-inset-top));right:12px;width:42px;height:42px;border-radius:50%;border:none;background:rgba(255,255,255,.18);color:#fff;font-size:1.3rem;cursor:pointer;line-height:1}
 .qbtn{width:26px;height:26px;border-radius:50%;border:2px solid var(--bdr2);background:var(--bg);cursor:pointer;font-size:.88rem;font-weight:700;display:flex;align-items:center;justify-content:center;transition:all .15s;color:var(--ink)}
 .qbtn.p{background:var(--dark);border-color:var(--dark);color:var(--dktx)}
 .qbtn.m:hover{background:var(--v2-caramel);border-color:var(--v2-caramel);color:#fff}
@@ -3031,19 +3041,21 @@ function safeImgUrl(u){
   u = String(u||'').trim();
   return /^https:\/\/[^\s"'<>]+$/.test(u) ? u : '';
 }
-function menuThumbHtml(imgUrl, fallbackIcon, size){
+function menuThumbHtml(imgUrl, fallbackIcon, size, name){
   size = size || 42;
   const u = safeImgUrl(imgUrl);
   const inner = u
     ? '<img src="'+escHtml(u)+'" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover">'
     : escHtml(fallbackIcon||'🍽️');
-  return '<div style="width:'+size+'px;height:'+size+'px;border-radius:9px;background:var(--bg);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;font-size:'+(size>=50?'1.5rem':'1.35rem')+'">'+inner+'</div>';
+  // 有圖才可點擊放大；品名與網址都走 data-* + escHtml，由 openImgLightbox 以 textContent / safeImgUrl 再處理一次
+  const zoom = u ? ' class="thumb-zoom" role="button" aria-label="放大圖片" data-full="'+escHtml(u)+'" data-name="'+escHtml(name||'')+'" onclick="openImgLightbox(event,this)"' : '';
+  return '<div'+zoom+' style="width:'+size+'px;height:'+size+'px;border-radius:9px;background:var(--bg);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;font-size:'+(size>=50?'1.5rem':'1.35rem')+'">'+inner+'</div>';
 }
 
 function renderMItems(){
   return S.aiMenu.map((item,i)=>
     `<div class="mi">
-      ${menuThumbHtml(item.imgUrl, item.icon||S.shopSel?.icon||'🍽️')}
+      ${menuThumbHtml(item.imgUrl, item.icon||S.shopSel?.icon||'🍽️', 42, item.name)}
       <div class="mi-info"><div class="mi-nm">${escHtml(item.name)}</div><div class="mi-cat">${escHtml(item.cat||'')}</div></div>
       <div class="mi-p">NT$${item.price}</div>
       <button class="mi-del" onclick="delItem(${i})">✕</button>
@@ -3499,10 +3511,12 @@ function renderOList(){
     const cups=cart[i]||[];
     const q=cups.length;
     return `<div class="oi ${q>0?'sel':''}" id="oi-${i}">
-      ${menuThumbHtml(item.imgUrl, item.icon||S.curGroup.shopIcon||'🍽️')}
+      ${menuThumbHtml(item.imgUrl, item.icon||S.curGroup.shopIcon||'🍽️', 42, item.name)}
       <div class="oi-info">
         <div class="oi-nm">${escHtml(item.name)}</div>
         <div class="oi-cat">${escHtml(item.cat||'')}</div>
+        ${S.curGroup._id ? `<input type="file" id="grp-img-input-${i}" accept="image/*" style="display:none" onchange="uploadGroupItemImage(${i},event)">
+        <button type="button" class="oi-cam" id="grp-cam-${i}" onclick="event.stopPropagation();document.getElementById('grp-img-input-${i}').click()">📷 ${safeImgUrl(item.imgUrl)?'換圖':'上傳圖片'}</button>` : ''}
       </div>
       <div class="oi-right">
         <div class="oi-p">NT$${item.price}</div>
@@ -4983,7 +4997,17 @@ function rerenderCurrentScreen(){
         }
       }
     }
-    // 其他畫面 (點餐中、完成頁) 不自動重繪避免干擾輸入
+    else if(id==='s-order'){
+      // 點餐畫面：只在「菜品圖片網址有變」時重繪品項清單（renderOList 只依 cart 狀態重畫，不動備註/姓名輸入框）
+      const grps = S.groups?.[S.selDate]?.[S.type];
+      const fresh = Array.isArray(grps) ? grps.find(g => g && S.curGroup && g._id === S.curGroup._id) : null;
+      if(fresh && fresh !== S.curGroup){
+        const oldM = S.curGroup.menu || [], newM = fresh.menu || [];
+        const changed = newM.length === oldM.length && newM.some((m,i) => (m.imgUrl||'') !== (oldM[i]?.imgUrl||''));
+        if(changed){ oldM.forEach((m,i)=>{ m.imgUrl = newM[i].imgUrl || ''; }); renderOList(); }
+      }
+    }
+    // 其他畫面 (完成頁) 不自動重繪避免干擾輸入
   }catch(e){ console.warn('rerender failed:', e.message); }
 }
 
@@ -5130,7 +5154,7 @@ function renderItemImageEditor(){
   wrap.innerHTML = '<div class="sect">' + escHtml(shop.name) + '（' + menu.length + ' 項）</div>' +
     (menu.map(function(item,i){
       return '<div class="mi" style="margin-bottom:8px">'
-        + menuThumbHtml(item.imgUrl, icon, 52)
+        + menuThumbHtml(item.imgUrl, icon, 52, item.name)
         + '<div class="mi-info"><div class="mi-nm">' + escHtml(item.name) + '</div><div class="mi-cat">' + escHtml(item.cat||'') + '｜NT$' + Number(item.price||0) + '</div></div>'
         + '<input type="file" id="item-img-input-' + i + '" accept="image/*" style="display:none" onchange="uploadItemImage(' + i + ',event)">'
         + '<button class="btn btn-out btn-sm" onclick="document.getElementById(\'item-img-input-' + i + '\').click()">📷</button>'
@@ -5187,6 +5211,77 @@ async function uploadItemImage(itemIdx, e){
   }
 }
 
+
+// ── 點擊縮圖放大（lightbox）─────────────────────────────────────
+// 圖片網址再過一次 safeImgUrl（只收 https），品名用 textContent，不拼 innerHTML。
+function openImgLightbox(ev, el){
+  if(ev){ ev.stopPropagation(); ev.preventDefault(); }
+  const u = safeImgUrl(el && el.getAttribute('data-full'));
+  if(!u) return;
+  let lb = document.getElementById('img-lb');
+  if(!lb){
+    lb = document.createElement('div');
+    lb.id = 'img-lb';
+    lb.setAttribute('role','dialog'); lb.setAttribute('aria-modal','true');
+    const x = document.createElement('button');
+    x.type='button'; x.className='lb-x'; x.setAttribute('aria-label','關閉'); x.textContent='✕';
+    x.onclick = function(e){ e.stopPropagation(); closeImgLightbox(); };
+    const im = document.createElement('img'); im.alt='';
+    im.onclick = function(e){ e.stopPropagation(); };            // 點圖本身不關閉，方便雙指縮放
+    const cap = document.createElement('div'); cap.className='lb-cap';
+    lb.appendChild(x); lb.appendChild(im); lb.appendChild(cap);
+    lb.addEventListener('click', closeImgLightbox);               // 點遮罩關閉
+    // 單指在遮罩上滑動不要捲動背景；雙指（pinch）不擋
+    lb.addEventListener('touchmove', function(e){ if(e.touches.length<2) e.preventDefault(); }, {passive:false});
+    document.body.appendChild(lb);
+  }
+  lb.querySelector('img').src = u;
+  lb.querySelector('.lb-cap').textContent = el.getAttribute('data-name') || '';
+  lb.classList.add('on');
+  document.body.classList.add('lb-open');
+}
+function closeImgLightbox(){
+  const lb = document.getElementById('img-lb');
+  if(lb){ lb.classList.remove('on'); const im = lb.querySelector('img'); if(im) im.removeAttribute('src'); }
+  document.body.classList.remove('lb-open');
+}
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape' && document.getElementById('img-lb')?.classList.contains('on')) closeImgLightbox();
+});
+
+// ── 團內菜品上傳圖片（開團後，在點餐畫面直接傳）──────────────────
+// 流程：壓縮 → 上傳 bucket menu-images（路徑 groups/<groupId>/<uuid>.jpg）→ RPC set_group_item_image
+//   RPC 會改該團 groups.menu_snapshot，並在該團有 shop_id 時順便寫回 menu_items.img_url。
+//   RPC 需先執行 supabase/drafts/20261005_group_item_image_待執行.sql（尚未執行）。
+async function uploadGroupItemImage(itemIdx, e){
+  const file = e?.target?.files?.[0];
+  if(e?.target) e.target.value = '';
+  const grp = S.curGroup;
+  const item = grp?.menu?.[itemIdx];
+  if(!file || !grp || !item) return;
+  if(!grp._id){ toast('⚠️ 這個團還沒同步到雲端，請稍後再試'); return; }
+  const btn = document.getElementById('grp-cam-'+itemIdx);
+  if(btn){ btn.disabled = true; btn.textContent = '⏳ 上傳中…'; }
+  try{
+    toast('⏳ 圖片處理中…');
+    const blob = await compressThumbImg(file);
+    const rand = (crypto.randomUUID ? crypto.randomUUID() : (Date.now()+'-'+Math.random().toString(36).slice(2)));
+    const path = 'groups/' + grp._id + '/' + rand + '.jpg';
+    const up = await SB.storage.from(MENU_IMG_BUCKET).upload(path, blob, { contentType:'image/jpeg', upsert:false, cacheControl:'31536000' });
+    if(up.error) throw up.error;
+    const publicUrl = SB.storage.from(MENU_IMG_BUCKET).getPublicUrl(path).data.publicUrl;
+    const { error } = await SB.rpc('set_group_item_image', { p_group_id: grp._id, p_item_name: item.name, p_img_url: publicUrl });
+    if(error) throw error;
+    item.imgUrl = publicUrl;            // 本人畫面立即更新；S.curGroup.menu 與 S.groups 內是同一份物件
+    try{ saveG(); }catch(_){}
+    toast('✅ 已更新「' + item.name + '」圖片');
+  }catch(err){
+    console.warn('uploadGroupItemImage failed:', err);
+    toast('⚠️ 圖片更新失敗：' + (err?.message || err));
+  }finally{
+    renderOList();                      // 成功或失敗都重繪，順便復原按鈕狀態
+  }
+}
 
 function togglePresetCard(idx){
   const card = document.getElementById('psc-'+idx);
