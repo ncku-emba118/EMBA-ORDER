@@ -1656,6 +1656,43 @@ body{background:var(--v2-paper)}
 .openbtn{display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 18px;border-radius:99px;background:var(--v2-accent);color:#fff;border:0;font-family:var(--v2-sans);font-weight:700;font-size:.86rem;cursor:pointer;box-shadow:0 4px 12px rgba(184,114,62,.3);white-space:nowrap}
 .openbtn .ic{stroke-width:2.2}
 .openbtn:active{transform:scale(.96)}
+
+/* ── 2026-10 UI 改版預覽 ── */
+.v2-drow{grid-template-columns:auto 52px 1fr 14px;gap:12px}
+.v2-drow-stat .d-grps{display:flex;flex-direction:column;gap:9px;min-width:0}
+.v2-drow-stat .d-grp{display:flex;align-items:center;gap:7px;min-width:0;font-size:13px}
+.v2-drow-stat .d-host{flex-shrink:0;display:inline-flex}
+.v2-drow-stat .d-host .av{--s:28px;box-shadow:0 0 0 1.5px var(--v2-paper),0 0 0 3px var(--v2-accent)}
+.v2-drow-stat .d-type{flex-shrink:0;font-family:var(--v2-mono);font-size:10.5px;letter-spacing:.5px;color:var(--v2-caramel);border:1px solid var(--v2-line-strong);border-radius:99px;padding:1px 7px;line-height:1.5}
+.v2-drow-stat .d-shop{flex:1;min-width:0;font-size:14px}
+.v2-drow-stat .d-n{flex-shrink:0;font-family:var(--v2-mono);font-size:11px;color:var(--v2-ink-muted);white-space:nowrap}
+.v2-drow-stat .d-more{font-family:var(--v2-mono);font-size:11px;color:var(--v2-ink-muted)}
+/* B 當天頁：依類型分區（無頭像） */
+.v2-sec{margin-top:28px}
+.v2-sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding-bottom:8px;border-bottom:1px solid var(--v2-line-strong)}
+.v2-sec-t{font-family:var(--v2-serif);font-size:26px;font-weight:500;color:var(--v2-ink);letter-spacing:-.3px;margin:0}
+.v2-sec-n{font-family:var(--v2-mono);font-size:11px;letter-spacing:1px;color:var(--v2-ink-muted)}
+.v2-sec .v2-grplist{margin-top:14px;gap:14px}
+.v2-sec .v2-grp{cursor:default;padding:18px 18px 8px;border-radius:20px}
+.v2-sec .v2-grp:hover{background:#FDF9EE;border-color:rgba(201,184,148,.4)}
+.v2-sec .v2-grp:active{transform:none}
+.v2-sec .v2-grp-shop{font-size:18px;white-space:normal}
+.v2-grp-cntline{margin-top:2px;font-family:var(--v2-mono);font-size:11.5px;letter-spacing:.5px;color:#7A4E2A}
+.v2-sec .v2-grp-btn.join{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;margin-top:16px;font-size:15px}
+.v2-menu{margin-top:12px;border:1px solid rgba(201,184,148,.5);border-radius:14px;background:#FFFDF4}
+.v2-menu>summary{min-height:44px;padding:0 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;list-style:none;font-family:var(--v2-sans);font-size:13px;font-weight:600;color:#5A4A34}
+.v2-menu>summary::-webkit-details-marker{display:none}
+.v2-menu>summary::after{content:"＋";color:#7A4E2A;font-weight:500}
+.v2-menu[open]>summary::after{content:"－"}
+.v2-menu-list{list-style:none;margin:0;padding:2px 14px 10px;max-height:260px;overflow:auto}
+.v2-menu-list li{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-top:1px dashed rgba(201,184,148,.6);font-size:13px;color:#3A2E20}
+.v2-menu-list li:first-child{border-top:0}
+.v2-menu-pr{font-family:var(--v2-mono);color:#7A4E2A;white-space:nowrap}
+.v2-grp-viewrow{margin-top:14px;border-top:1px solid rgba(201,184,148,.5);display:flex;justify-content:center;padding-top:2px}
+.v2-grp-link{min-height:44px;padding:0 16px;background:none;border:0;cursor:pointer;font-family:var(--v2-sans);font-size:13px;font-weight:600;color:#7A4E2A;text-decoration:underline;text-underline-offset:3px}
+.v2-sec .v2-grp-empty{margin-top:14px;padding:18px;border-radius:20px;text-align:center;background:var(--v2-food-card);border:1px solid rgba(122,78,42,.08)}
+.v2-grp-empty-s{font-size:12.5px;color:var(--v2-ink-soft)}
+.v2-sec .v2-grp-empty .v2-grp-btn.join{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;margin-top:12px;font-size:15px}
 /* 其他小圖示 */
 .date-banner>span:first-child{display:inline-flex;align-items:center;gap:6px}
 .date-banner .nt{display:inline-flex;align-items:center;gap:4px}
@@ -1967,8 +2004,8 @@ body{background:var(--v2-paper)}
 
     <div class="v2-hero">
       <p class="v2-tag" id="day-d" style="display:block;margin-bottom:12px"></p>
-      <h1 class="v2-display" id="day-display">今天要開<br>哪一種團？</h1>
-      <p class="v2-sub" id="day-sub">— 飲料團與便當團可以同天並存</p>
+      <h1 class="v2-display" id="day-display">這天的團</h1>
+      <p class="v2-sub" id="day-sub">— 選一種看看，或開個新團</p>
     </div>
 
     <div class="v2-type-stack" id="trow"></div>
@@ -1982,7 +2019,7 @@ body{background:var(--v2-paper)}
 <!-- SHOP SELECT -->
 <div class="scr" id="s-shop">
   <div class="tb">
-    <button class="tb-bk" onclick="go('day')" aria-label="返回"></button>
+    <button class="tb-bk" onclick="navBack('day')" aria-label="返回"></button>
     <div>
       <div class="tb-t" id="shop-t">選一家店</div>
       <div class="tb-s" id="shop-s">STEP · 03 / 04</div>
@@ -2088,7 +2125,7 @@ body{background:var(--v2-paper)}
 
 <!-- CONFIRM -->
 <div class="scr" id="s-confirm">
-  <div class="tb"><button class="tb-bk" onclick="go('order')" aria-label="返回">←</button><div><div class="tb-t" id="cf-title">確認訂單</div></div></div>
+  <div class="tb"><button class="tb-bk" onclick="navBack('order')" aria-label="返回">←</button><div><div class="tb-t" id="cf-title">確認訂單</div></div></div>
   <div class="wrap" id="cf-wrap"></div>
   <!-- 固定底欄：最終送出鍵永遠看得到，不用捲到最下面才找得到（2026-08-01 加）
        2026-10-06：確認頁只保留這一顆主要送出鈕；改單模式下文字改為「更新訂單」並執行 saveEditOrder -->
@@ -2109,7 +2146,7 @@ body{background:var(--v2-paper)}
 <!-- GROUP DETAIL -->
 <div class="scr" id="s-group">
   <div class="tb">
-    <button class="tb-bk" onclick="go('day')">←</button>
+    <button class="tb-bk" onclick="navBack('day')">←</button>
     <div><div class="tb-t" id="gd-title">團訂單清單</div><div class="tb-s" id="gd-sub"></div></div>
   </div>
   <div class="wrap" id="gd-wrap"></div>
@@ -2369,25 +2406,19 @@ function renderGrid(){
     if(isTd && total===0) stat='<button type="button" class="openbtn" onclick="event.stopPropagation();v2StartNewToday()">'+ic('plus','sm')+'開今天的團</button>';
     else if(total===0) stat='<span class="muted">尚無開團</span>';
     else {
-      const grpsOfDay=[];
-      TYPE_KEYS.forEach(t=>{ const v=g[t]; (Array.isArray(v)?v:(v?[v]:[])).forEach(x=>{ if(x) grpsOfDay.push(x); }); });
-      const first=grpsOfDay[0];
-      const shopTxt=(first&&first.shopName?first.shopName:'')+(grpsOfDay.length>1?` 等 ${grpsOfDay.length} 團`:'');
-      const names=[]; grpsOfDay.forEach(x=>(x.orders||[]).forEach(o=>{ if(o&&o.name) names.push(o.name); }));
-      const st=avStackHtml(names,5);
-      stat='<span class="d-shop">'+escHtml(shopTxt||(total+' 個團開著'))+'</span>'+(st.n?st.html:'<span class="muted">尚無人點</span>');
+      const rows=[];
+      TYPE_KEYS.forEach(t=>{ const v=g[t]; (Array.isArray(v)?v:(v?[v]:[])).forEach(x=>{ if(x) rows.push({t:t,g:x}); }); });
+      const shown=rows.slice(0,3);
+      stat='<span class="d-grps">'+shown.map(r=>{
+        const gp=r.g, n=(gp.orders||[]).length;
+        return '<span class="d-grp"><span class="d-host">'+avatarHtml(gp.hostName)+'</span>'
+          +'<span class="d-type">'+escHtml(tcfg(r.t).label)+'</span>'
+          +'<span class="d-shop">'+escHtml(gp.shopName||'未命名店家')+'</span>'
+          +'<span class="d-n">'+n+' 人</span></span>';
+      }).join('')+(rows.length>3?'<span class="d-more">另 '+(rows.length-3)+' 團</span>':'')+'</span>';
     }
     // 類型計數
-    let counts='';
-    if(total>0){
-      const parts=[];
-      TYPE_KEYS.forEach(t=>{
-        if(typeCounts[t]) parts.push(`${tcfg(t).label}×${typeCounts[t]}`);
-      });
-      counts=`<span class="v2-drow-counts">${parts.join(' · ')}</span>`;
-    } else {
-      counts='<span></span>';
-    }
+    const counts='';
     const wdShort=['SUN','MON','TUE','WED','THU','FRI','SAT'][dw];
     h+=`<div class="v2-drow${isTd?' today':''}${wkend?' wkend':''}" onclick="selDate('${k}')">
       <span class="v2-drow-wd">${wdShort}</span>
@@ -2439,8 +2470,7 @@ function renderDay(){
   var isToday=(k===tdKey);
   var sub=document.getElementById('day-sub');
   if(sub){
-    if(isToday) sub.textContent='— 飲料、便當、下午茶可同天並存';
-    else sub.textContent='— 這天要開飲料、便當還是下午茶？';
+    sub.textContent='— 選一種看看，或開個新團';
   }
 
   // SVG icons
@@ -2450,61 +2480,39 @@ function renderDay(){
   var icoMap={drink:icoDrink,food:icoFood,tea:icoTea};
   var icoArrow='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
 
+  // 依類型分區直排（不放頭像）
   var html='';
   TYPE_KEYS.forEach(function(type){
-    var cfg=tcfg(type);
-    var raw=g[type];
-    var grpList=Array.isArray(raw)?raw:(raw?[raw]:[]);
-    var kicker=cfg.kicker;
-    var name=cfg.label;
-    var ico=icoMap[type]||icoFood;
-    var footLeft=grpList.length?('已有 '+grpList.length+' 個團'):cfg.preset;
-
-    var grpCards='';
+    var raw=g[type]; var grpList=Array.isArray(raw)?raw:(raw?[raw]:[]);
+    var name=tcfg(type).label;
+    html+='<section class="v2-sec"><div class="v2-sec-h"><h2 class="v2-sec-t">'+name+'</h2>'
+      +'<span class="v2-sec-n">'+(grpList.length?(grpList.length+' 團'):'尚未開團')+'</span></div>';
     if(grpList.length){
-      grpCards+='<div class="v2-grplist">';
+      html+='<div class="v2-grplist">';
       grpList.forEach(function(grp,idx){
-        var cnt=(grp.orders||[]).length;
+        var orders=grp.orders||[];
         var ann=grp.announcement?('<div class="v2-grp-ann">「'+escHtml(grp.announcement)+'」</div>'):'';
-        // 整張卡片 onclick 開訂單清單；內部按鈕用 stopPropagation 才另做動作
-        var cardClickG='openGroupDetailIdx(\''+type+'\','+idx+')';
-        var jg='var e=arguments[0]||window.event;if(e){e.stopPropagation();}joinGroup(\''+type+'\','+idx+')';
-        grpCards+='<div class="v2-grp" onclick="'+cardClickG+'">'
-          +'<div class="v2-grp-head">'
+        var menu=Array.isArray(grp.menu)?grp.menu.filter(function(m){return m&&m.name;}):[];
+        var menuHtml=menu.length?('<details class="v2-menu"><summary>看菜單（'+menu.length+' 項）</summary><ul class="v2-menu-list">'
+          +menu.map(function(m){return '<li><span class="v2-menu-nm">'+escHtml(m.name)+'</span><span class="v2-menu-pr">'+(m.price!=null&&m.price!==''?('$'+escHtml(m.price)):'')+'</span></li>';}).join('')
+          +'</ul></details>'):'';
+        html+='<div class="v2-grp">'
           +'<div class="v2-grp-shop">'+escHtml(grp.shopName||'未命名店家')+'</div>'
-          +'<div class="v2-grp-cnt">'+cnt+' ORDERS</div>'
-          +'</div>'
-          +'<div class="v2-grp-host">團主 '+escHtml(grp.hostName||'—')+'</div>'
+          +'<div class="v2-grp-host">'+escHtml(grp.hostName||'—')+' 開團</div>'
+          +'<div class="v2-grp-cntline">'+orders.length+' 人點餐</div>'
           +ann
-          +'<div class="v2-grp-acts">'
-          +'<button type="button" class="v2-grp-btn join" onclick="'+jg+'">＋ 加入點餐</button>'
-          +'<button type="button" class="v2-grp-btn view" onclick="'+cardClickG+'">訂單清單</button>'
-          +'</div>'
+          +'<button type="button" class="v2-grp-btn join" onclick="joinGroup(\''+type+'\','+idx+')">＋ 加入點餐</button>'
+          +menuHtml
+          +'<div class="v2-grp-viewrow"><button type="button" class="v2-grp-link" onclick="openGroupDetailIdx(\''+type+'\','+idx+')">看訂單清單（'+orders.length+'）</button></div>'
           +'</div>';
       });
-      grpCards+='</div>';
-      // 已有團時才顯示「開新的團」虛線按鈕
-      grpCards+='<button type="button" class="v2-new-grp-btn" onclick="startNewGroup(\''+type+'\')">＋ 再開一個'+name+'團</button>';
+      html+='</div>';
+      html+='<button type="button" class="v2-new-grp-btn" onclick="startNewGroup(\''+type+'\')">＋ 再開一個'+name+'團</button>';
+    } else {
+      html+='<div class="v2-grp-empty"><div class="v2-grp-empty-s">'+tcfg(type).preset+'</div>'
+        +'<button type="button" class="v2-grp-btn join" onclick="startNewGroup(\''+type+'\')">＋ 開新團</button></div>';
     }
-
-    // 外層 type-card：只有在沒有團時才有 onclick（= 開新團）
-    var cardClick=grpList.length?' style="cursor:default"':' onclick="startNewGroup(\''+type+'\')"';
-    html+='<div class="v2-type-card v2-'+type+'"'+cardClick+'>'
-      +'<div class="v2-type-head">'
-      +'<div>'
-      +'<div class="v2-type-kicker">'+kicker+'</div>'
-      +'<div class="v2-type-name">'+name+'</div>'
-      +'</div>'
-      +'<div class="v2-type-ico">'+ico+'</div>'
-      +'</div>'
-      +grpCards
-      +'<hr class="v2-type-sep"/>'
-      +'<div class="v2-type-foot">'
-      +'<span>'+footLeft+'</span>'
-      +(grpList.length?'<span class="pick" onclick="startNewGroup(\''+type+'\')" style="cursor:pointer">開新團'+icoArrow+'</span>'
-        :'<span class="pick">選這個'+icoArrow+'</span>')
-      +'</div>'
-      +'</div>';
+    html+='</section>';
   });
   document.getElementById('trow').innerHTML=html;
 }
@@ -4239,7 +4247,7 @@ function leaveOrderScreen(){
   if(blockedByWrite()) return;
   if(S.editingOrderIdx>=0){ cancelEdit(); return; } // 改單中按返回 = 放棄修改、回訂單清單
   if(hasUnsentItems() && !confirm('你選的品項還沒送出喔！\n現在離開就會不見，確定要離開嗎？')) return;
-  go('day');
+  navBack('day');
 }
 
 // ═══════════════════════════════════════════════
@@ -5644,7 +5652,7 @@ async function syncGAS(force){
 }
 
 // ── 判斷目前在哪個畫面,呼叫對應 render 函式 ──
-function rerenderCurrentScreen(){
+function rerenderCurrentScreen(loadedOk){  // loadedOk===true：由 loadGroups 成功載入後呼叫（確認過資料）
   const active = document.querySelector('.scr.on');
   if(!active) return;
   const id = active.id;
@@ -5661,7 +5669,14 @@ function rerenderCurrentScreen(){
         if(fresh && Array.isArray(arr) && arr.includes(fresh)){
           if(typeof renderGroupDetail==='function') renderGroupDetail();
         } else if(before && before._id){
-          toast('這個團已被刪除'); renderDay(); go('day');
+          if(loadedOk===true){
+            // 資料已成功載入且該團真的不存在 → 才退回上一頁
+            toast('這個團已被刪除'); renderDay(); navBack('day');
+          } else if(Date.now()-(S._goneToastAt||0) > 8000){
+            // 資料還沒確認（還在同步／載入失敗）→ 原地不動，只提醒
+            S._goneToastAt = Date.now();
+            toast('這個團已被刪除或還在同步');
+          }
         }
       }
     }
@@ -6200,13 +6215,33 @@ function doDownloadPDF(){
 // ═══════════════════════════════════════════════
 // NAV
 // ═══════════════════════════════════════════════
+// ── 返回堆疊（2026-10 方案 A）：記住「從哪一頁進來」，返回就退回那一頁 ──
+//   只在畫面真的改變時記錄來源；進首頁清空；已在堆疊裡的畫面＝繞回環，彈到它為止不累加；上限 20。
+const NAV_STACK_MAX = 20;
+const NAV_NO_RETURN = ['s-whoami','s-done'];
+function navTrack(from,to){
+  let st = S.navStack = S.navStack || [];
+  if(to==='s-land'){ S.navStack = []; return; }
+  const i = st.lastIndexOf(to);
+  if(i>=0){ st.length = i; return; }
+  if(from && !NAV_NO_RETURN.includes(from) && st[st.length-1]!==from) st.push(from);
+  if(st.length>NAV_STACK_MAX) st.splice(0, st.length-NAV_STACK_MAX);
+}
+// 返回上一頁：堆疊有就回堆疊頂，沒有就用 fallback（既有目的地）
+function navBack(fallback){
+  const st = S.navStack || [];
+  const cur = document.querySelector('.scr.on')?.id;
+  let prev = st[st.length-1];
+  if(!prev || prev===cur || NAV_NO_RETURN.includes(prev) || !document.getElementById(prev)) prev = null;
+  go(prev || fallback);
+}
 function go(name){
   const ids={'land':'s-land','day':'s-day','shop':'s-shop','presets':'s-presets','s-presets':'s-presets','item-images':'s-item-images','s-item-images':'s-item-images','setup':'s-setup','order':'s-order','confirm':'s-confirm','done':'s-done','group':'s-group','s-group':'s-group','help':'s-help'};
   const target=ids[name]||name;
   const curId=document.querySelector('.scr.on')?.id||'';
   // 寫入處理中：不准離開目前畫面（返回鈕、換頁都走這裡）；同一畫面重繪照常
   if(target!==curId && writeLocked()){ blockedByWrite(); return; }
-  if(target!==curId) _navSeq++;
+  if(target!==curId){ _navSeq++; navTrack(curId,target); }
   document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
   document.getElementById(target)?.classList.add('on');
   window.scrollTo(0,0);
@@ -6227,15 +6262,15 @@ function go(name){
 // s-land（團列表首頁）沒有返回邏輯，go() 也不會替它壓哨兵 → 在首頁左滑即正常離站回 SLC。
 const NAV_BACK = {
   's-help'   : ()=>go('land'),
-  's-day'    : ()=>go('land'),
-  's-shop'   : ()=>go('day'),
+  's-day'    : ()=>navBack('land'),
+  's-shop'   : ()=>navBack('day'),
   's-presets': ()=>go('s-shop'),
   's-item-images': ()=>go('s-presets'),
   's-setup'  : ()=>setupBack(),
   's-order'  : ()=>leaveOrderScreen(),   // 內含「品項還沒送出」confirm
-  's-confirm': ()=>go('order'),
+  's-confirm': ()=>navBack('order'),
   's-done'   : ()=>{ go('land'); renderGrid(); },
-  's-group'  : ()=>go('day')
+  's-group'  : ()=>navBack('day')
 };
 function navGuard(){ try{ history.pushState({e118nav:1},''); }catch(e){} }
 
